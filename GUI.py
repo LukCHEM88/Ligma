@@ -41,7 +41,6 @@ def Verschlüsseln():
     tk.Button(Verschlüsselnfester,text='← Zurück',command=Fenster).place(x='25',y='25')
     tk.Button(Verschlüsselnfester,text='Auswählen',command=False).place(x='50',y='150')
     tk.Button(Verschlüsselnfester,text='Auswählen',command=False).place(x='230',y='150')
-    Verschlüsselnfester.mainloop()
 
 # Enstschlüsseln
 def Entschlüsseln():
@@ -57,6 +56,12 @@ def Entschlüsseln():
     tk.Button(Entschlüsselnfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
     tk.Button(Entschlüsselnfenster,text='Auswählen',command=False).place(x='50',y='150')
     tk.Button(Entschlüsselnfenster,text='Auswählen',command=False).place(x='230',y='150')
+    SpeichernEnt = tk.Button(Entschlüsselnfenster,text='Entschlüsseln',state='disabled')
+    SpeichernEnt.place(x='130',y='220')
+    LKeyEnt = tk.Label(Entschlüsselnfenster,text='Keine Datei ausgewählt')
+    LKeyEnt.place(x='50',y='130')
+    LFileEnt = tk.Label(Entschlüsselnfenster,text='Keine Datei ausgewählt')
+    LFileEnt.place(x='230',y='130')
 
 
 
