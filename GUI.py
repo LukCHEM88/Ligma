@@ -56,8 +56,9 @@ def Entschlüsseln():
     tk.Button(Entschlüsselnfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
     tk.Button(Entschlüsselnfenster,text='Schlüssel',command=DateiKeyEnt).place(x='50',y='150')
     tk.Button(Entschlüsselnfenster,text='Datei',command=DateiMessageEnt).place(x='230',y='150')
-    SpeichernEnt = tk.Button(Entschlüsselnfenster,text='Entschlüsseln',state='disabled')
-    SpeichernEnt.place(x='130',y='220')
+    global Entschlüsselbutton
+    Entschlüsselbutton = tk.Button(Entschlüsselnfenster,text='Entschlüsseln',state='disabled')
+    Entschlüsselbutton.place(x='130',y='220')
     global LKeyEnt
     LKeyEnt = tk.Label(Entschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
     LKeyEnt.place(x='50',y='130',width='150')
@@ -71,6 +72,8 @@ def DateiKeyEnt():
     global Key
     Key = Open()
     LKeyEnt['text'] = Key
+    if Datei:
+        Entschlüsselbutton['state'] = 'active'
 def DateiMessageEnt():
     '''
     Fragt nach der Nachrichtdatei zum Entschlüsseln und Speichert diese in Datei
@@ -78,6 +81,8 @@ def DateiMessageEnt():
     global Datei
     Datei = Open()
     LFileEnt['text'] = Datei
+    if Key:
+        Entschlüsselbutton['state'] = 'active'
 
 def Open():
     '''
