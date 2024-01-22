@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk,filedialog
+from tkinter import filedialog
 
 def Fenster():
     '''
@@ -57,7 +57,7 @@ def Entschlüsseln():
     tk.Button(Entschlüsselnfenster,text='Schlüssel',command=DateiKeyEnt).place(x='50',y='150')
     tk.Button(Entschlüsselnfenster,text='Datei',command=DateiMessageEnt).place(x='230',y='150')
     global Entschlüsselbutton
-    Entschlüsselbutton = tk.Button(Entschlüsselnfenster,text='Entschlüsseln',state='disabled')
+    Entschlüsselbutton = tk.Button(Entschlüsselnfenster,text='Entschlüsseln',state='disabled',command=Entsch)
     Entschlüsselbutton.place(x='130',y='220')
     global LKeyEnt
     LKeyEnt = tk.Label(Entschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
@@ -70,19 +70,23 @@ def DateiKeyEnt():
     Fragt nach der Schlüsseldatei zum Entschlüsseln und Speichert diese in Key
     '''
     global Key
-    Key = Open()
-    LKeyEnt['text'] = Key
-    if Datei:
+    Key = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
+    if Key:
+        LKeyEnt['text'] = Key
+    if Datei and Key:
         Entschlüsselbutton['state'] = 'active'
 def DateiMessageEnt():
     '''
     Fragt nach der Nachrichtdatei zum Entschlüsseln und Speichert diese in Datei
     '''
     global Datei
-    Datei = Open()
-    LFileEnt['text'] = Datei
-    if Key:
+    Datei = filedialog.askopenfilename(filetypes=[("Verschlüsselte Datei", "*.ball")])
+    if Datei:
+        LFileEnt['text'] = Datei
+    if Key and Datei:
         Entschlüsselbutton['state'] = 'active'
+def Entsch():
+    pass
 
 def Open():
     '''
