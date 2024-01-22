@@ -7,6 +7,7 @@ def RadDreh(Nummer, Richtung):
     Dreht eine Liste entweder nach vorne oder nach hinten.\n
     Nummer = Integer, welche die Nummer des zu drehenden Rads angibt | Richtung = 1 --> Verschlüsseln | Richtung = 2 --> Entschlüsseln
     """
+    global Rad
     temp = ''
     laenge = len(Rad[Nummer]) - 1
     if (Richtung == 0):
@@ -80,11 +81,67 @@ def Umwandlung(Zeichen, gesucht):
     return Zeichen
 
 def KeySpeichern():
+    """
+    Speichert die 'Einzelt'-Variable und alle Rad-Konfigurationen in der Key-Datei 'Key.lig'.
+    """
     Datei = open('Key.lig', 'w', -1, 'utf-8')
     Datei.write(str(Einzelt) + '\n')
     for i in range(len(Verschiebungen)):
         Datei.write(str(Verschiebungen[i]) + '\n')
     Datei.close()
+    
+def Versch(Teil):
+    global Einzelt
+    global ZEinzelt
+    if (Teil == 1):
+        Einzelt = Vereinzeln(Zeichenkette)
+        Einzelt.sort()
+
+        for i in range(len(Einzelt)):
+            ZEinzelt.append(i)
+
+    elif (Teil == 2):
+        ZS = ''
+        for Zeichen1 in Zeichenkette:
+            ZS = ZS + Codieren(Zeichen1, AnzahlR, 0)
+        print(ZS + '[Ende]')
+
+        for i in range(len(Verschiebungen)):
+            while (Verschiebungen[i] < 0):
+                Verschiebungen[i] = Verschiebungen[i] + len(Einzelt)
+            while (Verschiebungen[i] > len(Einzelt)):
+                Verschiebungen[i] = Verschiebungen[i] - len(Einzelt)
+
+        KeySpeichern()
+
+        if ('y' == input('Wollen sie manuell die Verschlüsselungsinformationen haben? (y/n) --> ').lower()):
+            for i in range(len(Verschiebungen)):
+                print('Verschiebung von Rad ' + str(i + 1) + ': ' + str(Verschiebungen[i]))
+            print('Einzelt-Variable: ' + str(Einzelt))
+
+def Entsch(Teil):
+    global Einzelt
+    global ZEinzelt
+    global manuell
+    if (Teil == 1):
+        while (manuell != 'y') and (manuell != 'n'):
+            manuell = input('Wollen sie die bereits vorliegende Keydatei benutzen? (y/n) --> ').lower()
+
+        if (manuell == 'n'):
+            Einzelt = eval(input('Bitte geben sie die "Einzelt" Variable an.: '))
+        else:
+            Datei = open('Key.lig', 'r', -1, 'utf-8')
+            Einzelt = eval(Datei.readline())
+            Datei.close()
+        
+        for i in range(len(Einzelt)):
+            ZEinzelt.append(i)
+
+    elif (Teil == 2):
+        ZS = ''
+        for Zeichen1 in Zeichenkette[::-1]:
+            ZS = ZS + Codieren(Zeichen1, AnzahlR, 1)
+        print(ZS[::-1])
 
 
 #=====================Quellcode=====================#
@@ -96,36 +153,31 @@ while (Schluesseln != 'e') and (Schluesseln != 'v'):
 Zeichenkette = input('Nachricht: ')
 Rad = []
 Verschiebungen = []
-manuel = ''
-if (Schluesseln == 'v'):
-    Einzelt = Vereinzeln(Zeichenkette)
-    Einzelt.sort()
-else:
-    while (manuel != 'y') and (manuel != 'n'):
-        manuel = input('Wollen sie die bereits vorliegende Keydatei benutzen? (y/n) --> ').lower()
-    if (manuel == 'n'):
-        Einzelt = eval(input('Bitte geben sie die "Einzelt" Variable an.: '))
-    else:
-        Datei = open('Key.lig', 'r', -1, 'utf-8')
-        Einzelt = eval(Datei.readline())
-        Datei.close()
 ZEinzelt = []
-
-for i in range(len(Einzelt)):
-    ZEinzelt.append(i)
-
+manuell = ''
 AnzahlR = 0
-if (manuel != 'y'):
+
+if (Schluesseln == 'v'):
+    Versch(1)
+else:
+    Entsch(1)
+
+if (manuell != 'y'):
     while (AnzahlR < 1):
         AnzahlR = int(input('Anzahl Räder: '))
 
-if (manuel != 'y'):
+if (manuell != 'y'):
     manuell2 = ''
-    while (manuell2 != 'y') and (manuell2 != 'n'):
+    while (manuell2 != 'y') and (manuell2 != 'n') and (Schluesseln == 'v'):
         manuell2 = input('Wollen sie die Räder manuell eingeben? (y/n) --> ').lower()
     for i in range(AnzahlR):
-        if (manuell2 == 'y'):
+        if (manuell2 != 'n'):
             s = int(input('Verschiebung von Rad ' + str(i + 1) + ': '))
+            for i in range(len(Verschiebungen)):
+                while (s < 0):
+                    s = s + len(Einzelt)
+                while (s > len(Einzelt)):
+                    s = s - len(Einzelt)
         else:
             s = random.randint(0, AnzahlR)
         Verschiebungen.append(0)
@@ -137,28 +189,10 @@ else:
         if (line[0] != '['):
             AnzahlR += 1
             Verschiebungen.append(0)
-            RadHinzu(int(line))
+            RadHinzu(int(line.rstrip()))
     Datei.close()
 
-if (Schluesseln == 'e'):
-    ZS = ''
-    for Zeichen1 in Zeichenkette[::-1]:
-        ZS = ZS + Codieren(Zeichen1, AnzahlR, 1)
-    print(ZS[::-1])
+if (Schluesseln == 'v'):
+    Versch(2)
 else:
-    ZS = ''
-    for Zeichen1 in Zeichenkette:
-        ZS = ZS + Codieren(Zeichen1, AnzahlR, 0)
-    print(ZS + '[Ende]')
-
-    for i in range(len(Verschiebungen)):
-        while (Verschiebungen[i] < 0):
-            Verschiebungen[i] = Verschiebungen[i] + len(Einzelt)
-        while (Verschiebungen[i] > len(Einzelt)):
-            Verschiebungen[i] = Verschiebungen[i] - len(Einzelt)
-
-    for i in range(len(Verschiebungen)):
-        print('Verschiebung von Rad ' + str(i + 1) + ': ' + str(Verschiebungen[i]))
-    print('Einzelt = ' + str(Einzelt))
-
-    KeySpeichern()
+    Entsch(2)
