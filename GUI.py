@@ -7,7 +7,7 @@ def Fenster():
     '''
     global Hauptfenster
     try:
-       Verschlüsselnfester.destroy()
+       Verschlüsselnfenster.destroy()
     except NameError:
         pass
     except tk.TclError:
@@ -33,14 +33,45 @@ def Verschlüsseln():
     Erstellt das Fenster mit dem Programmteil zum Verschlüsseln
     '''
     Hauptfenster.destroy()
-    global Verschlüsselnfester
-    Verschlüsselnfester = tk.Tk()
-    Verschlüsselnfester.geometry('400x300')
-    Verschlüsselnfester.resizable('False','False')
-    Verschlüsselnfester.title('Ligma')
-    tk.Button(Verschlüsselnfester,text='← Zurück',command=Fenster).place(x='25',y='25')
-    tk.Button(Verschlüsselnfester,text='Schlüssel',command=False).place(x='50',y='150')
-    tk.Button(Verschlüsselnfester,text='Nachricht',command=False).place(x='230',y='150')
+    global Verschlüsselnfenster
+    Verschlüsselnfenster = tk.Tk()
+    Verschlüsselnfenster.geometry('400x300')
+    Verschlüsselnfenster.resizable('False','False')
+    Verschlüsselnfenster.title('Ligma')
+    tk.Button(Verschlüsselnfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
+    tk.Button(Verschlüsselnfenster,text='Schlüssel',command=DateiKeyVer).place(x='50',y='150')
+    tk.Button(Verschlüsselnfenster,text='Nachricht',command=DateiMessageVer).place(x='230',y='150')
+    global Verschlüsselbutton
+    Verschlüsselbutton = tk.Button(Verschlüsselnfenster,text='Verschlüsseln',state='disabled')
+    Verschlüsselbutton.place(x='130',y='220')
+    global LKeyVer
+    LKeyVer = tk.Label(Verschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
+    LKeyVer.place(x='50',y='130',width='150')
+    global LFileVer
+    LFileVer = tk.Label(Verschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
+    LFileVer.place(x='230',y='130',width='150')
+def DateiKeyVer():
+    '''
+    Fragt nach der Schlüsseldatei zum Verschlüsseln und Speichert diese in Key
+    '''
+    global Key
+    Key = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
+    if Key:
+        LKeyVer['text'] = Key
+    if Datei and Key:
+        Verschlüsselbutton['state'] = 'normal'
+def DateiMessageVer():
+    '''
+    Fragt nach der Nachrichtdatei zum Verschlüsseln und Speichert diese in Datei
+    '''
+    global Datei
+    Datei = filedialog.askopenfilename(filetypes=[("Textatei", "*.txt")])
+    if Datei:
+        LFileVer['text'] = Datei
+    if Key and Datei:
+        Verschlüsselbutton['state'] = 'normal'
+
+
 
 # Enstschlüsseln
 def Entschlüsseln():
@@ -74,7 +105,7 @@ def DateiKeyEnt():
     if Key:
         LKeyEnt['text'] = Key
     if Datei and Key:
-        Entschlüsselbutton['state'] = 'active'
+        Entschlüsselbutton['state'] = 'normal'
 def DateiMessageEnt():
     '''
     Fragt nach der Nachrichtdatei zum Entschlüsseln und Speichert diese in Datei
@@ -84,7 +115,7 @@ def DateiMessageEnt():
     if Datei:
         LFileEnt['text'] = Datei
     if Key and Datei:
-        Entschlüsselbutton['state'] = 'active'
+        Entschlüsselbutton['state'] = 'normal'
 def Entsch():
     pass
 
