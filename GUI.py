@@ -1,24 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog
+import os
 
 def Fenster():
     '''
     Erstellt ein Fenster mit Willkommen und Buttons zu den anderen Teilen des Programms
     '''
-    global Hauptfenster
-    try:
-       Verschlüsselnfenster.destroy()
-    except NameError:
-        pass
-    except tk.TclError:
-        pass
-    try:
-       Entschlüsselnfenster.destroy()
-    except NameError:
-        pass
-    except tk.TclError:
-        pass
-    Hauptfenster = tk.Tk()
+    for element in Hauptfenster.winfo_children():
+        element.destroy()
     Hauptfenster.geometry('400x300')
     Hauptfenster.resizable('False','False')
     Hauptfenster.title('Ligma')
@@ -32,23 +21,19 @@ def Verschlüsseln():
     '''
     Erstellt das Fenster mit dem Programmteil zum Verschlüsseln
     '''
-    Hauptfenster.destroy()
-    global Verschlüsselnfenster
-    Verschlüsselnfenster = tk.Tk()
-    Verschlüsselnfenster.geometry('400x300')
-    Verschlüsselnfenster.resizable('False','False')
-    Verschlüsselnfenster.title('Ligma')
-    tk.Button(Verschlüsselnfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
-    tk.Button(Verschlüsselnfenster,text='Schlüssel',command=DateiKeyVer).place(x='50',y='150')
-    tk.Button(Verschlüsselnfenster,text='Nachricht',command=DateiMessageVer).place(x='230',y='150')
+    for element in Hauptfenster.winfo_children():
+        element.destroy()
+    tk.Button(Hauptfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
+    tk.Button(Hauptfenster,text='Schlüssel',command=DateiKeyVer).place(x='50',y='150')
+    tk.Button(Hauptfenster,text='Nachricht',command=DateiMessageVer).place(x='230',y='150')
     global Verschlüsselbutton
-    Verschlüsselbutton = tk.Button(Verschlüsselnfenster,text='Verschlüsseln',state='disabled')
+    Verschlüsselbutton = tk.Button(Hauptfenster,text='Verschlüsseln',state='disabled')
     Verschlüsselbutton.place(x='130',y='220')
     global LKeyVer
-    LKeyVer = tk.Label(Verschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
+    LKeyVer = tk.Label(Hauptfenster,text='Keine Datei ausgewählt',anchor='w')
     LKeyVer.place(x='50',y='130',width='150')
     global LFileVer
-    LFileVer = tk.Label(Verschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
+    LFileVer = tk.Label(Hauptfenster,text='Keine Datei ausgewählt',anchor='w')
     LFileVer.place(x='230',y='130',width='150')
 def DateiKeyVer():
     '''
@@ -57,7 +42,7 @@ def DateiKeyVer():
     global Key
     Key = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
     if Key:
-        LKeyVer['text'] = Key
+        LKeyVer['text'] = os.path.basename(Key)
     if Datei and Key:
         Verschlüsselbutton['state'] = 'normal'
 def DateiMessageVer():
@@ -67,7 +52,7 @@ def DateiMessageVer():
     global Datei
     Datei = filedialog.askopenfilename(filetypes=[("Textatei", "*.txt")])
     if Datei:
-        LFileVer['text'] = Datei
+        LFileVer['text'] = os.path.basename(Datei)
     if Key and Datei:
         Verschlüsselbutton['state'] = 'normal'
 
@@ -78,23 +63,19 @@ def Entschlüsseln():
     '''
     Erstellt das Fenster mit dem Programmteil zum Entschlüsseln
     '''
-    Hauptfenster.destroy()
-    global Entschlüsselnfenster
-    Entschlüsselnfenster = tk.Tk()
-    Entschlüsselnfenster.geometry('400x300')
-    Entschlüsselnfenster.resizable('False','False')
-    Entschlüsselnfenster.title('Ligma')
-    tk.Button(Entschlüsselnfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
-    tk.Button(Entschlüsselnfenster,text='Schlüssel',command=DateiKeyEnt).place(x='50',y='150')
-    tk.Button(Entschlüsselnfenster,text='Datei',command=DateiMessageEnt).place(x='230',y='150')
+    for element in Hauptfenster.winfo_children():
+        element.destroy()
+    tk.Button(Hauptfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
+    tk.Button(Hauptfenster,text='Schlüssel',command=DateiKeyEnt).place(x='50',y='150')
+    tk.Button(Hauptfenster,text='Datei',command=DateiMessageEnt).place(x='230',y='150')
     global Entschlüsselbutton
-    Entschlüsselbutton = tk.Button(Entschlüsselnfenster,text='Entschlüsseln',state='disabled',command=Entsch)
+    Entschlüsselbutton = tk.Button(Hauptfenster,text='Entschlüsseln',state='disabled',command=Entsch)
     Entschlüsselbutton.place(x='130',y='220')
     global LKeyEnt
-    LKeyEnt = tk.Label(Entschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
+    LKeyEnt = tk.Label(Hauptfenster,text='Keine Datei ausgewählt',anchor='w')
     LKeyEnt.place(x='50',y='130',width='150')
     global LFileEnt
-    LFileEnt = tk.Label(Entschlüsselnfenster,text='Keine Datei ausgewählt',anchor='e')
+    LFileEnt = tk.Label(Hauptfenster,text='Keine Datei ausgewählt',anchor='w')
     LFileEnt.place(x='230',y='130',width='150')
 def DateiKeyEnt():
     '''
@@ -103,7 +84,7 @@ def DateiKeyEnt():
     global Key
     Key = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
     if Key:
-        LKeyEnt['text'] = Key
+        LKeyEnt['text'] = os.path.basename(Key)
     if Datei and Key:
         Entschlüsselbutton['state'] = 'normal'
 def DateiMessageEnt():
@@ -113,7 +94,7 @@ def DateiMessageEnt():
     global Datei
     Datei = filedialog.askopenfilename(filetypes=[("Verschlüsselte Datei", "*.ball")])
     if Datei:
-        LFileEnt['text'] = Datei
+        LFileEnt['text'] = os.path.basename(Datei)
     if Key and Datei:
         Entschlüsselbutton['state'] = 'normal'
 def Entsch():
@@ -124,4 +105,7 @@ def Open():
     Dialog zum öffnen einer Datei
     '''
     return filedialog.askopenfilename()
+
+global Hauptfenster
+Hauptfenster = tk.Tk()
 Fenster()
