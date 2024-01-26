@@ -118,6 +118,15 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei1 = '') ->
         Datei = open(Keydatei, 'r', -1, 'utf-8')
         Einzelt = eval(Datei.readline())
         Datei.close()
+        Kontrolle = Vereinzeln(Zeichenkette)
+        for Zeichen in Kontrolle:
+            temp = False
+            for Zeichen1 in Einzelt:
+                if (Zeichen1 == Zeichen):
+                    temp = True
+                    break
+            if (temp == False):
+                return '[Error: (*.lig)-Datei und (*.ball)-Datei nicht Kompatibel]'
 
     for i in range(len(Einzelt)):
             ZEinzelt.append(i)
@@ -155,7 +164,20 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei1 = '') ->
             ZS = ZS + Codieren(Zeichen1, AnzahlR, 1)
         return ZS[::-1]
 
-Ergebnis = Raedern('Lukas ist klein.', 'v', 657, 'Key.lig')
+#=====================Beispiele für Implementierung und Tests=====================#
+
+Ergebnis = ''
+Datei = open('test.txt', 'r', -1, 'utf-8')
+for zeile in Datei.readlines():
+    Ergebnis = Ergebnis + zeile
+Datei.close()
+
+Ergebnis = Raedern(Ergebnis, 'v', 1500, 'Key.lig')
 print(Ergebnis)
+
+Datei = open('test.ball', 'w', -1, 'utf-8')
+Datei.write(Ergebnis)
+Datei.close()
+
 Ergebnis = Raedern(Ergebnis, 'e', 0, 'Key.lig')
 print(Ergebnis)
