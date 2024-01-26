@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog
 import os
+import Ligma
 
 def Fenster():
     '''
@@ -8,14 +9,17 @@ def Fenster():
     '''
     for element in Hauptfenster.winfo_children():
         element.destroy()
-    Hauptfenster.geometry('400x300')
-    Hauptfenster.resizable('False','False')
-    Hauptfenster.title('Ligma')
     tk.Label(Hauptfenster,text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200',y='75',anchor='center')
     tk.Label(Hauptfenster,text='© 2024 Aperture Laboratories').place(x='200',y='250',anchor='center')
     tk.Button(Hauptfenster,text='Verschlüsseln',command=Verschlüsseln).place(x='300',y='150',anchor='center')
     tk.Button(Hauptfenster,text='Entschlüsseln',command=Entschlüsseln).place(x='100',y='150',anchor='center')
-    Hauptfenster.mainloop()
+    global FirstRun
+    if FirstRun:
+        Hauptfenster.geometry('400x300')
+        Hauptfenster.resizable('False','False')
+        Hauptfenster.title('Ligma')
+        FirstRun = False
+        Hauptfenster.mainloop()
 
 # Verschlüsseln
 def Verschlüsseln():
@@ -27,9 +31,9 @@ def Verschlüsseln():
     tk.Button(Hauptfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
     tk.Button(Hauptfenster,text='Durchsuchen',command=DateiKeyVer).place(x='100',y='150',anchor='center')
     tk.Button(Hauptfenster,text='Durchsuchen',command=DateiMessageVer).place(x='300',y='150',anchor='center')
-    tk.Button(Hauptfenster,text='Konfigurieren',command=config).place(x='100',y='185',anchor='center')
+    tk.Button(Hauptfenster,text='Generieren',command=config).place(x='100',y='185',anchor='center')
     global Verschlüsselbutton
-    Verschlüsselbutton = tk.Button(Hauptfenster,text='Verschlüsseln',state='disabled')
+    Verschlüsselbutton = tk.Button(Hauptfenster,text='Verschlüsseln',state='disabled',command=Versch)
     Verschlüsselbutton.place(x='200',y='250',anchor='center')
     global LKeyVer
     LKeyVer = tk.Label(Hauptfenster,text='Kein Schlüssel ausgewählt',anchor='center')
@@ -57,8 +61,14 @@ def DateiMessageVer():
         LFileVer['text'] = os.path.basename(Datei)
     if Key and Datei:
         Verschlüsselbutton['state'] = 'normal'
+def Versch():
+    datei = open(Datei,'r',encoding='utf-8')
+    message = ''
+    for zeile in datei:
+        message += zeile
+    print(Ligma.Raedern(message,'v',100,Key)) #Zum testen erstmal mit 100
 def config():
-    pass
+    pass #Mach ich auch später lol
 
 
 
@@ -102,7 +112,11 @@ def DateiMessageEnt():
     if Key and Datei:
         Entschlüsselbutton['state'] = 'normal'
 def Entsch():
-    pass
+    datei = open(Datei,'r',encoding='utf-8')
+    ball = ''
+    for zeile in datei:
+        ball += zeile
+    print(Ligma.Raedern(ball,'e',0,Key)) #Auf Speichern gerade kein Bock, mach ich später xd
 
 def Open():
     '''
@@ -113,4 +127,6 @@ def Open():
 
 global Hauptfenster
 Hauptfenster = tk.Tk()
+global FirstRun
+FirstRun = True
 Fenster()
