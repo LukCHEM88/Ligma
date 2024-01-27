@@ -1,14 +1,17 @@
+# Import benötigter Module
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, simpledialog
 import os
 import Ligma
 
+# Funktionen
 def Fenster():
     '''
     Erstellt ein Fenster mit Willkommen und Buttons zu den anderen Teilen des Programms
     '''
     for element in Hauptfenster.winfo_children():
         element.destroy()
+    Hauptfenster.title('Ligma')
     tk.Label(Hauptfenster,text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200',y='75',anchor='center')
     tk.Label(Hauptfenster,text='© 2024 Aperture Laboratories').place(x='200',y='250',anchor='center')
     tk.Button(Hauptfenster,text='Verschlüsseln',command=Verschlüsseln).place(x='300',y='150',anchor='center')
@@ -17,68 +20,78 @@ def Fenster():
     if FirstRun:
         Hauptfenster.geometry('400x300')
         Hauptfenster.resizable('False','False')
-        Hauptfenster.title('Ligma')
         FirstRun = False
         Hauptfenster.mainloop()
 
-# Verschlüsseln
+# Funktionen, die mit dem Verschlüsseln zu tun haben
 def Verschlüsseln():
     '''
     Erstellt das Fenster mit dem Programmteil zum Verschlüsseln
     '''
     for element in Hauptfenster.winfo_children():
         element.destroy()
+    Hauptfenster.title('Ligma - Verschlüsseln')
     tk.Button(Hauptfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
-    tk.Button(Hauptfenster,text='Durchsuchen',command=DateiKeyVer).place(x='100',y='150',anchor='center')
+    tk.Button(Hauptfenster,text='Speichern',command=DateiKeyVer).place(x='100',y='150',anchor='center')
     tk.Button(Hauptfenster,text='Durchsuchen',command=DateiMessageVer).place(x='300',y='150',anchor='center')
-    tk.Button(Hauptfenster,text='Generieren',command=config).place(x='100',y='185',anchor='center')
     global Verschlüsselbutton
     Verschlüsselbutton = tk.Button(Hauptfenster,text='Verschlüsseln',state='disabled',command=Versch)
     Verschlüsselbutton.place(x='200',y='250',anchor='center')
     global LKeyVer
-    LKeyVer = tk.Label(Hauptfenster,text='Kein Schlüssel ausgewählt',anchor='center')
+    LKeyVer = tk.Label(Hauptfenster,text='Kein Schlüssel gespeichert',anchor='center')
     LKeyVer.place(x='100',y='120',width='180',anchor='center')
     global LFileVer
     LFileVer = tk.Label(Hauptfenster,text='Keine Nachricht ausgewählt',anchor='center')
     LFileVer.place(x='300',y='120',width='180',anchor='center')
 def DateiKeyVer():
     '''
-    Fragt nach der Schlüsseldatei zum Verschlüsseln und Speichert diese in Key
+    Fragt nach Speicherort der Schlüsseldatei
     '''
-    global Key
-    Key = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
-    if Key:
-        LKeyVer['text'] = os.path.basename(Key)
-    if Datei and Key:
-        Verschlüsselbutton['state'] = 'normal'
+    global Keypfad
+    Keytmp = filedialog.asksaveasfilename(defaultextension='.lig',filetypes=[("Schlüsseldateien", "*.lig")])
+    if Keytmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
+        Keypfad = Keytmp
+        LKeyVer['text'] = os.path.basename(Keypfad) # Zeigt ausgewählte Datei an
+    if DateiVerpfad and Keypfad:
+        Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
 def DateiMessageVer():
     '''
-    Fragt nach der Nachrichtdatei zum Verschlüsseln und Speichert diese in Datei
+    Fragt nach der Nachrichtdatei zum Verschlüsseln und Speichert diese in Dateipfad
     '''
-    global Datei
-    Datei = filedialog.askopenfilename(filetypes=[("Textatei", "*.txt")])
-    if Datei:
-        LFileVer['text'] = os.path.basename(Datei)
-    if Key and Datei:
-        Verschlüsselbutton['state'] = 'normal'
+    global DateiVerpfad
+    Dateitmp = filedialog.askopenfilename(filetypes=[("Textdatei", "*.txt")])
+    if Dateitmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
+        DateiVerpfad = Dateitmp
+        LFileVer['text'] = os.path.basename(DateiVerpfad) # Zeigt ausgewählte Datei an
+    if Keypfad and DateiVerpfad:
+        Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
 def Versch():
-    datei = open(Datei,'r',encoding='utf-8')
+    '''
+    Wird aktiv, wenn eine Schlüsseldatei und eine Nachrichtdatei ausgewählt wurde
+    Verschlüsselt die Datei
+    '''
+    datei = open(DateiVerpfad,'r',encoding='utf-8')
     message = ''
     for zeile in datei:
         message += zeile
-    print(Ligma.Raedern(message,'v',100,Key)) #Zum testen erstmal mit 100
-def config():
-    pass #Mach ich auch später lol
+    datei.close()
+    Anz = simpledialog.askinteger('Verschlüsseln','Stärke der Verschlüsselung eingeben: ',initialvalue=50,minvalue=1)
+    if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
+        Text = Ligma.Raedern(message,'v',Anz,Keypfad)
+        Savepfad = filedialog.asksaveasfilename(defaultextension='.ball',filetypes=[('Verschlüsselte Dateien', '*.ball')])
+        if Savepfad:
+            datei = open(Savepfad,'w',encoding='utf-8')
+            datei.write(Text)
+            datei.close()
 
-
-
-# Enstschlüsseln
+# Funktionen, die mit dem Enstschlüsseln zu tun haben
 def Entschlüsseln():
     '''
     Erstellt das Fenster mit dem Programmteil zum Entschlüsseln
     '''
     for element in Hauptfenster.winfo_children():
         element.destroy()
+    Hauptfenster.title('Ligma - Entschlüsseln')
     tk.Button(Hauptfenster,text='← Zurück',command=Fenster).place(x='25',y='25')
     tk.Button(Hauptfenster,text='Durchsuchen',command=DateiKeyEnt).place(x='100',y='150',anchor='center')
     tk.Button(Hauptfenster,text='Durchsuchen',command=DateiMessageEnt).place(x='300',y='150',anchor='center')
@@ -93,38 +106,43 @@ def Entschlüsseln():
     LFileEnt.place(x='300',y='120',width='180',anchor='center')
 def DateiKeyEnt():
     '''
-    Fragt nach der Schlüsseldatei zum Entschlüsseln und Speichert diese in Key
+    Fragt nach einer Schlüsseldatei zum Entschlüsseln und Speichert diese in Keypfad
     '''
-    global Key
-    Key = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
-    if Key:
-        LKeyEnt['text'] = os.path.basename(Key)
-    if Datei and Key:
+    global Keypfad
+    Keytmp = filedialog.askopenfilename(filetypes=[("Schlüsseldateien", "*.lig")])
+    if Keytmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
+        Keypfad = Keytmp
+        LKeyEnt['text'] = os.path.basename(Keypfad) # Zeigt ausgewählte Datei an
+    if DateiEntpfad and Keypfad: # Aktiviert Entsch, wenn beide Dateien ausgewählt wurden
         Entschlüsselbutton['state'] = 'normal'
 def DateiMessageEnt():
     '''
-    Fragt nach der Nachrichtdatei zum Entschlüsseln und Speichert diese in Datei
+    Fragt nach einer Verschlüsselten Datei und Speichert deren Pfad in Dateipfad
     '''
-    global Datei
-    Datei = filedialog.askopenfilename(filetypes=[("Verschlüsselte Datei", "*.ball")])
-    if Datei:
-        LFileEnt['text'] = os.path.basename(Datei)
-    if Key and Datei:
+    global DateiEntpfad
+    Dateitmp = filedialog.askopenfilename(filetypes=[("Verschlüsselte Datei", "*.ball")])
+    if Dateitmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
+        DateiEntpfad = Dateitmp
+        LFileEnt['text'] = os.path.basename(DateiEntpfad) # Zeigt ausgewählte Datei an
+    if Keypfad and DateiEntpfad: # Aktiviert Entsch, wenn beide Dateien ausgewählt wurden
         Entschlüsselbutton['state'] = 'normal'
 def Entsch():
-    datei = open(Datei,'r',encoding='utf-8')
+    '''
+    Wird aktiv, wenn eine Schlüsseldatei und eine Verschlüsselte Datei ausgewählt wurde
+    Entschlüsselt die Datei mit dem Schlüssel
+    '''
+    datei = open(DateiEntpfad,'r',encoding='utf-8')
     ball = ''
     for zeile in datei:
         ball += zeile
-    print(Ligma.Raedern(ball,'e',0,Key)) #Auf Speichern gerade kein Bock, mach ich später xd
+    Text = Ligma.Raedern(ball,'e',0,Keypfad)
+    Savepfad = filedialog.asksaveasfilename(defaultextension='.txt',filetypes=[('Textdateien', '*.txt')])
+    if Savepfad:
+        datei = open(Savepfad,'w',encoding='utf-8')
+        datei.write(Text)
+        datei.close()
 
-def Open():
-    '''
-    Dialog zum öffnen einer Datei
-    '''
-    return filedialog.askopenfilename()
-
-
+# Code zum initialisieren
 global Hauptfenster
 Hauptfenster = tk.Tk()
 global FirstRun

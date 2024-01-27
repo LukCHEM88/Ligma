@@ -1,8 +1,9 @@
 import random
+import os
 
 #=====================Funktionen=====================#
 
-def RadDreh(Nummer, Richtung):
+def RadDreh(Nummer: int, Richtung: int) -> None:
     """
     Dreht eine Liste entweder nach vorne oder nach hinten.\n
     Nummer = Integer, welche die Nummer des zu drehenden Rads angibt | Richtung = 1 --> Verschlüsseln | Richtung = 2 --> Entschlüsseln
@@ -29,7 +30,7 @@ def RadDreh(Nummer, Richtung):
                 Rad[Nummer][laenge - Nummer2] = Rad[Nummer][0]
             temp = temp2
 
-def Vereinzeln(ZKette):
+def Vereinzeln(ZKette: str) -> list:
     """
     Schreibt alle in einer gegebenen Zeichenkette vorkommenden verschiedenen Zeichen in eine Liste.\n
     ZKette = Zeichenkette, welche genutzt werden soll
@@ -40,10 +41,10 @@ def Vereinzeln(ZKette):
             Liste.append(Element)
     return Liste
 
-def RadHinzu(Startposition):
+def RadHinzu(Startposition: int) -> None:
     """
     Erstellt ein weiteres Rad, welches eine Liste ist, in der Liste 'Rad'.\n
-    Inhalt = Liste, welche als Rad hinzugefügt werden soll | Startposition = Integer, welcher besagt wie weit das Rad verschoben werden soll
+    Startposition = Integer, welcher besagt wie weit das Rad verschoben werden soll
     """
     global ZEinzelt
     global Rad
@@ -55,7 +56,7 @@ def RadHinzu(Startposition):
         for i in range(Startposition):
             RadDreh(len(Rad) - 1, 0)
 
-def Codieren(Zeichen, Anzahl, Richtung):
+def Codieren(Zeichen: str, Anzahl: int, Richtung: int) -> str:
     """
     Nimmt ein Zeichen und schickt dieses durch 'Anzahl' viele Räder in die Richtung 'Richtung'.\n
     Zeichen = String | Anzahl = Integer | Richtung = 0/1
@@ -71,7 +72,7 @@ def Codieren(Zeichen, Anzahl, Richtung):
             Zeichen = Umwandlung(Zeichen, Rad[Anzahl - RNummer - 1])
     return Einzelt[int(Zeichen)]
 
-def Umwandlung(Zeichen, gesucht):
+def Umwandlung(Zeichen: str, gesucht: list) -> int:
     """
     Wandelt ein gegebenes Zeichen in die dementsprechende 'gesucht'-Zahl um.\n
     Zeichen = String, welcher umgewandelt wird | gesucht = Liste, welche nach 'Zeichen' abgesucht wird
@@ -81,31 +82,21 @@ def Umwandlung(Zeichen, gesucht):
             Zeichen = Nummer
             break
     return Zeichen
-
-def KeySpeichern():
-    """
-    Speichert die 'Einzelt'-Variable und alle Rad-Konfigurationen in der Key-Datei 'Key.lig'.
-    """
-    global Keydatei
-    Datei = open(Keydatei, 'w', -1, 'utf-8')
-    Datei.write(str(Einzelt) + '\n')
-    for i in range(len(Verschiebungen)):
-        Datei.write(str(Verschiebungen[i]) + '\n')
-    Datei.close()
         
-def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei1 = '') -> str:
+def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> str:
     """
     Zeichenkette = String, der ver-/entschlüsselt werden soll \n
     Schlüsseln = v/e --> v = verschlüsseln; e = entschlüsseln \n
     AnzahlR = Anzahl an Rädern, welche beim verschlüsseln genutzt werden sollen \n
     Keydatei1 = Pfad, welcher zum Speicherort der Keydatei führt
     """
-    global Keydatei
     global Verschiebungen
     global Einzelt
     global ZEinzelt
     global Rad
-    Keydatei = Keydatei1
+
+    if (Zeichenkette == '') or ((Schluesseln != 'e') and (Schluesseln != 'v')) or ((AnzahlR < 1) and (Schluesseln != 'e')) or (Keydatei == ''):
+        return '[Error: benötigte(r) Parameter nicht vorhanden]'
 
     Rad = []
     Verschiebungen = []
@@ -147,10 +138,18 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei1 = '') ->
             while (Verschiebungen[i] > len(Einzelt)):
                 Verschiebungen[i] = Verschiebungen[i] - len(Einzelt)
         
-        KeySpeichern()
+        Datei = open(Keydatei, 'w', -1, 'utf-8')
+        Datei.write(str(Einzelt) + '\n')
+        for i in range(len(Verschiebungen)):
+            Datei.write(str(Verschiebungen[i]) + '\n')
+        Datei.close()
+
         return ZS
     elif (Schluesseln == 'e'):
-        Datei = open(Keydatei, 'r', -1, 'utf-8')
+        if os.path.exists(Keydatei):
+            Datei = open(Keydatei, 'r', -1, 'utf-8')
+        else:
+            return '[Error: Keydatei wurde nicht gefunden]'
         AnzahlR = 0
         for line in Datei.readlines():
             if (line[0] != '['):
@@ -165,14 +164,14 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei1 = '') ->
         return ZS[::-1]
 
 #=====================Beispiele für Implementierung und Tests=====================#
-
+'''
 Ergebnis = ''
 Datei = open('test.txt', 'r', -1, 'utf-8')
 for zeile in Datei.readlines():
     Ergebnis = Ergebnis + zeile
 Datei.close()
 
-Ergebnis = Raedern(Ergebnis, 'v', 1500, 'Key.lig')
+Ergebnis = Raedern(Ergebnis, 'v', 1000, 'Key.lig')
 print(Ergebnis)
 
 Datei = open('test.ball', 'w', -1, 'utf-8')
@@ -181,3 +180,4 @@ Datei.close()
 
 Ergebnis = Raedern(Ergebnis, 'e', 0, 'Key.lig')
 print(Ergebnis)
+'''
