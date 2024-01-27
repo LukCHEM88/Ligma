@@ -1,1 +1,2 @@
-Ligma -- Ligma Balls
+Ligma
+Sicheres und Schnelles Verschlüsseln von Textdateien!
