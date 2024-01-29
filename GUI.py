@@ -12,6 +12,7 @@ def Fenster():
     for element in Hauptfenster.winfo_children():
         element.destroy()
     Hauptfenster.title('Ligma')
+    Hauptfenster.iconbitmap('Icon_Ligma.ico')
     tk.Label(Hauptfenster,text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200',y='75',anchor='center')
     tk.Label(Hauptfenster,text='© 2024 Aperture Laboratories').place(x='200',y='250',anchor='center')
     tk.Button(Hauptfenster,text='Verschlüsseln',command=Verschlüsseln).place(x='300',y='150',anchor='center')
