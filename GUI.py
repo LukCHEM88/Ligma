@@ -1,6 +1,6 @@
 # Import benötigter Module
 import tkinter as tk
-from tkinter import filedialog, simpledialog
+from tkinter import filedialog, simpledialog, messagebox
 import os
 import Ligma
 
@@ -78,11 +78,16 @@ def Versch():
     Anz = simpledialog.askinteger('Verschlüsseln','Stärke der Verschlüsselung eingeben: ',initialvalue=50,minvalue=1)
     if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
         Text = Ligma.Raedern(message,'v',Anz,Keypfad)
-        Savepfad = filedialog.asksaveasfilename(defaultextension='.ball',filetypes=[('Verschlüsselte Dateien', '*.ball')])
-        if Savepfad:
-            datei = open(Savepfad,'w',encoding='utf-8')
-            datei.write(Text)
-            datei.close()
+        if Text == '[Error: Keydatei wurde nicht gefunden]':
+            messagebox.showerror('Verschlüsseln', 'Error: Keydatei wurde nicht gefunden')
+        elif Text == '[Error: benötigte(r) Parameter nicht vorhanden]':
+            messagebox.showerror('Verschlüsseln', 'Error: benötigte(r) Parameter nicht vorhanden')
+        else:
+            Savepfad = filedialog.asksaveasfilename(defaultextension='.ball',filetypes=[('Verschlüsselte Dateien', '*.ball')])
+            if Savepfad:
+                datei = open(Savepfad,'w',encoding='utf-8')
+                datei.write(Text)
+                datei.close()
 
 # Funktionen, die mit dem Enstschlüsseln zu tun haben
 def Entschlüsseln():
@@ -136,11 +141,18 @@ def Entsch():
     for zeile in datei:
         ball += zeile
     Text = Ligma.Raedern(ball,'e',0,Keypfad)
-    Savepfad = filedialog.asksaveasfilename(defaultextension='.txt',filetypes=[('Textdateien', '*.txt')])
-    if Savepfad:
-        datei = open(Savepfad,'w',encoding='utf-8')
-        datei.write(Text)
-        datei.close()
+    if Text == '[Error: Keydatei wurde nicht gefunden]':
+        messagebox.showerror('Entschlüsseln', 'Error: Keydatei wurde nicht gefunden')
+    elif Text == '[Error: (*.lig)-Datei und (*.ball)-Datei nicht Kompatibel]':
+        messagebox.showerror('Entschlüsseln', 'Error: (*.lig)-Datei und (*.ball)-Datei nicht Kompatibel')
+    elif Text == '[Error: benötigte(r) Parameter nicht vorhanden]':
+        messagebox.showerror('Entschlüsseln', 'Error: benötigte(r) Parameter nicht vorhanden')
+    else:
+        Savepfad = filedialog.asksaveasfilename(defaultextension='.txt',filetypes=[('Textdateien', '*.txt')])
+        if Savepfad:
+            datei = open(Savepfad,'w',encoding='utf-8')
+            datei.write(Text)
+            datei.close()
 
 # Code zum initialisieren
 global Hauptfenster
