@@ -25,17 +25,18 @@ def Codieren(Zeichen: str, Anzahl: int, Richtung: int) -> str:
     Zeichen = Umwandlung(Zeichen, Einzelt)
     for RNummer in range(Anzahl):
         if (Richtung == 0):
-            Zeichen = ZEinzelt[kuerzen2(Zeichen - Rad[RNummer])]
+            Zeichen = ZEinzelt[kuerzen(Zeichen - Rad[RNummer], 1)]
             Rad[RNummer] = kuerzen(Rad[RNummer] + 1)
         else:
-            Rad[Anzahl - RNummer - 1] = kuerzen2(Rad[Anzahl - RNummer - 1] - 1)
-            Zeichen = ZEinzelt[kuerzen2(Zeichen + Rad[Anzahl - RNummer - 1])]
+            Rad[Anzahl - RNummer - 1] = kuerzen(Rad[Anzahl - RNummer - 1] - 1, 1)
+            Zeichen = ZEinzelt[kuerzen(Zeichen + Rad[Anzahl - RNummer - 1], 1)]
     return Einzelt[Zeichen]
 
 def Umwandlung(Zeichen: str, gesucht: list) -> int:
     """
     Wandelt ein gegebenes Zeichen in die dementsprechende 'gesucht'-Zahl um.\n
-    Zeichen = String, welcher umgewandelt wird | gesucht = Liste, welche nach 'Zeichen' abgesucht wird
+    Zeichen = String, welcher umgewandelt wird\n
+    gesucht = Liste, welche nach 'Zeichen' abgesucht wird
     """
     for Nummer in range(len(gesucht)):
         if gesucht[Nummer] == Zeichen:
@@ -116,22 +117,21 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
             ZS += Codieren(Zeichen1, AnzahlR, 1)
         return ZS[::-1]
 
-def kuerzen(zuKuerzen):
+def kuerzen(zuKuerzen: int, was = 0) -> int:
+    """
+    Verschiebt einen gegebenen Integer-Wert in den vorgegbenen Bereich.
+    zuKürzen = Integer, welche verschoben werden muss
+    was = Integer, welche angibt wie viel vom vorgegebene Bereich abgezogen werden soll
+    """
     while (zuKuerzen < 0):
         zuKuerzen += len(Einzelt)
-    while (zuKuerzen > len(Einzelt)):
+    while (zuKuerzen > (len(Einzelt) - was)):
         zuKuerzen -= len(Einzelt)
     return zuKuerzen
 
-def kuerzen2(zuKuerzen):
-    while (zuKuerzen < 0):
-        zuKuerzen += len(Einzelt)
-    while (zuKuerzen > (len(Einzelt) - 1)):
-        zuKuerzen -= len(Einzelt)
-    return zuKuerzen
 
 #=====================Beispiele für Implementierung und Tests=====================#
-
+'''
 Ergebnis = ''
 Datei = open('test.txt', 'r', -1, 'utf-8')
 for zeile in Datei.readlines():
@@ -147,3 +147,4 @@ Datei.close()
 
 Ergebnis = Raedern(Ergebnis, 'e', 0, 'Key.lig')
 print(Ergebnis)
+'''
