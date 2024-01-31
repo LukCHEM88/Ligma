@@ -3,33 +3,6 @@ import os
 
 #=====================Funktionen=====================#
 
-def RadDreh(Nummer: int, Richtung: int) -> None:
-    """
-    Dreht eine Liste entweder nach vorne oder nach hinten.\n
-    Nummer = Integer, welche die Nummer des zu drehenden Rads angibt | Richtung = 1 --> Verschlüsseln | Richtung = 2 --> Entschlüsseln
-    """
-    global Rad
-    temp = ''
-    laenge = len(Rad[Nummer]) - 1
-    if (Richtung == 0):
-        Verschiebungen[Nummer] = Verschiebungen[Nummer] + 1
-        for Nummer2 in range(len(Rad[Nummer])):
-            temp2 = Rad[Nummer][Nummer2]
-            if (temp != ''):
-                Rad[Nummer][Nummer2] = temp
-            else:
-                Rad[Nummer][Nummer2] = Rad[Nummer][laenge]
-            temp = temp2
-    elif (Richtung == 1):
-        Verschiebungen[Nummer] = Verschiebungen[Nummer] - 1
-        for Nummer2 in range(len(Rad[Nummer])):
-            temp2 = Rad[Nummer][laenge - Nummer2]
-            if (temp != ''):
-                Rad[Nummer][laenge - Nummer2] = temp
-            else:
-                Rad[Nummer][laenge - Nummer2] = Rad[Nummer][0]
-            temp = temp2
-
 def Vereinzeln(ZKette: str) -> list:
     """
     Schreibt alle in einer gegebenen Zeichenkette vorkommenden verschiedenen Zeichen in eine Liste.\n
@@ -41,36 +14,23 @@ def Vereinzeln(ZKette: str) -> list:
             Liste.append(Element)
     return Liste
 
-def RadHinzu(Startposition: int) -> None:
-    """
-    Erstellt ein weiteres Rad, welches eine Liste ist, in der Liste 'Rad'.\n
-    Startposition = Integer, welcher besagt wie weit das Rad verschoben werden soll
-    """
-    global ZEinzelt
-    global Rad
-    Rad.append(ZEinzelt[:])
-    if (Startposition > (len(Einzelt) // 2)) and (Startposition < len(Einzelt)):
-        for i in range(len(Einzelt) - Startposition):
-            RadDreh(len(Rad) - 1, 1)
-    else:
-        for i in range(Startposition):
-            RadDreh(len(Rad) - 1, 0)
-
 def Codieren(Zeichen: str, Anzahl: int, Richtung: int) -> str:
     """
     Nimmt ein Zeichen und schickt dieses durch 'Anzahl' viele Räder in die Richtung 'Richtung'.\n
     Zeichen = String | Anzahl = Integer | Richtung = 0/1
     """
     global Rad
+    global ZEinzelt
+    global Einzelt
     Zeichen = Umwandlung(Zeichen, Einzelt)
     for RNummer in range(Anzahl):
         if (Richtung == 0):
-            Zeichen = Rad[RNummer][int(Zeichen)]
-            RadDreh(RNummer, 0)
+            Zeichen = ZEinzelt[kuerzen2(Zeichen - Rad[RNummer])]
+            Rad[RNummer] = kuerzen(Rad[RNummer] + 1)
         else:
-            RadDreh(Anzahl - RNummer - 1, 1)
-            Zeichen = Umwandlung(Zeichen, Rad[Anzahl - RNummer - 1])
-    return Einzelt[int(Zeichen)]
+            Rad[Anzahl - RNummer - 1] = kuerzen2(Rad[Anzahl - RNummer - 1] - 1)
+            Zeichen = ZEinzelt[kuerzen2(Zeichen + Rad[Anzahl - RNummer - 1])]
+    return Einzelt[Zeichen]
 
 def Umwandlung(Zeichen: str, gesucht: list) -> int:
     """
@@ -90,7 +50,6 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
     AnzahlR = Anzahl an Rädern, welche beim verschlüsseln genutzt werden sollen \n
     Keydatei1 = Pfad, welcher zum Speicherort der Keydatei führt
     """
-    global Verschiebungen
     global Einzelt
     global ZEinzelt
     global Rad
@@ -99,7 +58,6 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
         return '[Error: benötigte(r) Parameter nicht vorhanden]'
 
     Rad = []
-    Verschiebungen = []
     ZEinzelt = []
 
     if (Schluesseln == 'v'):
@@ -125,23 +83,19 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
     if (Schluesseln == 'v'):
         for i in range(AnzahlR):
             s = random.randint(0, AnzahlR)
-            Verschiebungen.append(0)
-            RadHinzu(s)
+            Rad.append(kuerzen(s))
 
         ZS = ''
         for Zeichen1 in Zeichenkette:
-            ZS = ZS + Codieren(Zeichen1, AnzahlR, 0)
+            ZS += Codieren(Zeichen1, AnzahlR, 0)
 
-        for i in range(len(Verschiebungen)):
-            while (Verschiebungen[i] < 0):
-                Verschiebungen[i] = Verschiebungen[i] + len(Einzelt)
-            while (Verschiebungen[i] > len(Einzelt)):
-                Verschiebungen[i] = Verschiebungen[i] - len(Einzelt)
+        for i in range(len(Rad)):
+            Rad[i] = kuerzen(Rad[i])
         
         Datei = open(Keydatei, 'w', -1, 'utf-8')
         Datei.write(str(Einzelt) + '\n')
-        for i in range(len(Verschiebungen)):
-            Datei.write(str(Verschiebungen[i]) + '\n')
+        for i in range(len(Rad)):
+            Datei.write(str(Rad[i]) + '\n')
         Datei.close()
 
         return ZS
@@ -154,24 +108,37 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
         for line in Datei.readlines():
             if (line[0] != '['):
                 AnzahlR += 1
-                Verschiebungen.append(0)
-                RadHinzu(int(line.rstrip()))
+                Rad.append(kuerzen(int(line.rstrip())))
         Datei.close()
 
         ZS = ''
         for Zeichen1 in Zeichenkette[::-1]:
-            ZS = ZS + Codieren(Zeichen1, AnzahlR, 1)
+            ZS += Codieren(Zeichen1, AnzahlR, 1)
         return ZS[::-1]
 
+def kuerzen(zuKuerzen):
+    while (zuKuerzen < 0):
+        zuKuerzen += len(Einzelt)
+    while (zuKuerzen > len(Einzelt)):
+        zuKuerzen -= len(Einzelt)
+    return zuKuerzen
+
+def kuerzen2(zuKuerzen):
+    while (zuKuerzen < 0):
+        zuKuerzen += len(Einzelt)
+    while (zuKuerzen > (len(Einzelt) - 1)):
+        zuKuerzen -= len(Einzelt)
+    return zuKuerzen
+
 #=====================Beispiele für Implementierung und Tests=====================#
-'''
+
 Ergebnis = ''
 Datei = open('test.txt', 'r', -1, 'utf-8')
 for zeile in Datei.readlines():
-    Ergebnis = Ergebnis + zeile
+    Ergebnis += zeile
 Datei.close()
 
-Ergebnis = Raedern(Ergebnis, 'v', 1000, 'Key.lig')
+Ergebnis = Raedern(Ergebnis, 'v', 2000, 'Key.lig')
 print(Ergebnis)
 
 Datei = open('test.ball', 'w', -1, 'utf-8')
@@ -180,4 +147,3 @@ Datei.close()
 
 Ergebnis = Raedern(Ergebnis, 'e', 0, 'Key.lig')
 print(Ergebnis)
-'''
