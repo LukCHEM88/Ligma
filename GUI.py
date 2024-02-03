@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import filedialog, simpledialog, messagebox
 import os
 import Ligma
+import LigmaB
 import platform
 
 # Funktionen
@@ -14,7 +15,9 @@ def Fenster():
         element.destroy()
     Hauptfenster.title('Ligma')
     if platform.system() == 'Windows':
-        if os.path.exists('Icon_Ligma.ico'):
+        if os.path.exists(os.path.expanduser('~\\Ligma\\Icon_Ligma.ico')):
+            Hauptfenster.iconbitmap(os.path.expanduser('~\\Ligma\\Icon_Ligma.ico'))
+        elif os.path.exists('Icon_Ligma.ico'):
             Hauptfenster.iconbitmap('Icon_Ligma.ico')
     tk.Label(Hauptfenster,text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200',y='75',anchor='center')
     tk.Label(Hauptfenster,text='© 2024 Aperture Laboratories').place(x='200',y='250',anchor='center')
@@ -47,6 +50,11 @@ def Verschlüsseln():
     global LFileVer
     LFileVer = tk.Label(Hauptfenster,text='Keine Nachricht ausgewählt',anchor='center')
     LFileVer.place(x='300',y='120',width='180',anchor='center')
+    try:
+        if Keypfad:
+            LKeyVer['text'] = os.path.basename(Keypfad)
+    except NameError:
+        pass
 def DateiKeyVer():
     '''
     Fragt nach Speicherort der Schlüsseldatei
@@ -56,8 +64,11 @@ def DateiKeyVer():
     if Keytmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
         Keypfad = Keytmp
         LKeyVer['text'] = os.path.basename(Keypfad) # Zeigt ausgewählte Datei an
-    if DateiVerpfad and Keypfad:
-        Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
+    try:
+        if DateiVerpfad and Keypfad:
+            Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
+    except NameError:
+        pass
 def DateiMessageVer():
     '''
     Fragt nach der Nachrichtdatei zum Verschlüsseln und Speichert diese in Dateipfad
@@ -67,8 +78,11 @@ def DateiMessageVer():
     if Dateitmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
         DateiVerpfad = Dateitmp
         LFileVer['text'] = os.path.basename(DateiVerpfad) # Zeigt ausgewählte Datei an
-    if Keypfad and DateiVerpfad:
-        Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
+    try:
+        if Keypfad and DateiVerpfad:
+            Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
+    except NameError:
+        pass
 def Versch():
     '''
     Wird aktiv, wenn eine Schlüsseldatei und eine Nachrichtdatei ausgewählt wurde
@@ -92,6 +106,15 @@ def Versch():
                 datei = open(Savepfad,'w',encoding='utf-8')
                 datei.write(Text)
                 datei.close()
+                SekAnz = simpledialog.askinteger('Verschlüsseln','Menge der Sekundärverschlüsselungen angeben: ',initialvalue=1,minvalue=0)
+                message = len(message)
+                if SekAnz:
+                    for i in range(SekAnz):
+                        Anz2 = False
+                        while not Anz2:
+                            Anz2 = simpledialog.askinteger('Verschlüsseln','Stärke der '+str(i+1)+' Sekundärverschlüsselung eingeben: ',initialvalue=message//10,minvalue=1,maxvalue=message//2)
+                        message += Anz2
+                        LigmaB.Versch(Anz2,Keypfad,Savepfad)
 
 # Funktionen, die mit dem Enstschlüsseln zu tun haben
 def Entschlüsseln():
@@ -113,6 +136,11 @@ def Entschlüsseln():
     global LFileEnt
     LFileEnt = tk.Label(Hauptfenster,text='Keine Nachricht ausgewählt',anchor='center')
     LFileEnt.place(x='300',y='120',width='180',anchor='center')
+    try:
+        if Keypfad:
+            LKeyEnt['text'] = os.path.basename(Keypfad)
+    except NameError:
+        pass
 def DateiKeyEnt():
     '''
     Fragt nach einer Schlüsseldatei zum Entschlüsseln und Speichert diese in Keypfad
@@ -122,8 +150,11 @@ def DateiKeyEnt():
     if Keytmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
         Keypfad = Keytmp
         LKeyEnt['text'] = os.path.basename(Keypfad) # Zeigt ausgewählte Datei an
-    if DateiEntpfad and Keypfad: # Aktiviert Entsch, wenn beide Dateien ausgewählt wurden
-        Entschlüsselbutton['state'] = 'normal'
+    try:
+        if DateiEntpfad and Keypfad: # Aktiviert Entsch, wenn beide Dateien ausgewählt wurden
+            Entschlüsselbutton['state'] = 'normal'
+    except NameError:
+        pass
 def DateiMessageEnt():
     '''
     Fragt nach einer Verschlüsselten Datei und Speichert deren Pfad in Dateipfad
@@ -133,13 +164,23 @@ def DateiMessageEnt():
     if Dateitmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
         DateiEntpfad = Dateitmp
         LFileEnt['text'] = os.path.basename(DateiEntpfad) # Zeigt ausgewählte Datei an
-    if Keypfad and DateiEntpfad: # Aktiviert Entsch, wenn beide Dateien ausgewählt wurden
-        Entschlüsselbutton['state'] = 'normal'
+    try:
+        if Keypfad and DateiEntpfad: # Aktiviert Entsch, wenn beide Dateien ausgewählt wurden
+            Entschlüsselbutton['state'] = 'normal'
+    except NameError:
+        pass
 def Entsch():
     '''
     Wird aktiv, wenn eine Schlüsseldatei und eine Verschlüsselte Datei ausgewählt wurde
     Entschlüsselt die Datei mit dem Schlüssel
     '''
+    SekAnz = False
+    while not SekAnz:
+        SekAnz = simpledialog.askinteger('Entschlüsseln','Wie oft wurde die Datei sekundärverschlüsselt?',initialvalue=1,minvalue=0)
+        if SekAnz == 0:
+            break
+    for i in range(SekAnz):
+        LigmaB.Entsch(Keypfad,DateiEntpfad)
     datei = open(DateiEntpfad,'r',encoding='utf-8')
     ball = ''
     for zeile in datei:
