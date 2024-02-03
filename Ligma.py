@@ -128,23 +128,3 @@ def kuerzen(zuKuerzen: int, was = 0) -> int:
     while (zuKuerzen > (len(Einzelt) - was)):
         zuKuerzen -= len(Einzelt)
     return zuKuerzen
-
-
-#=====================Beispiele für Implementierung und Tests=====================#
-'''
-Ergebnis = ''
-Datei = open('test.txt', 'r', -1, 'utf-8')
-for zeile in Datei.readlines():
-    Ergebnis += zeile
-Datei.close()
-
-Ergebnis = Raedern(Ergebnis, 'v', 2000, 'Key.lig')
-print(Ergebnis)
-
-Datei = open('test.ball', 'w', -1, 'utf-8')
-Datei.write(Ergebnis)
-Datei.close()
-
-Ergebnis = Raedern(Ergebnis, 'e', 0, 'Key.lig')
-print(Ergebnis)
-'''

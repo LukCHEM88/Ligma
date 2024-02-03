@@ -90,13 +90,3 @@ def Entsch(Keydatei: str, Zieldatei: str) -> bool:
     Datei.close()
     
     return True
-
-
-#=====================Beispiele für Implementierung und Tests=====================#
-'''
-ZS = Versch(10, 'Key.lig', 'test.ball')
-print(ZS) #Falls ZS = True, dann wurde die Funktion erfolgreich ausgeführt
-
-ZS = Entsch('Key.lig', 'test.ball')
-print(ZS) #Falls ZS = True, dann wurde die Funktion erfolgreich ausgeführt
-'''
