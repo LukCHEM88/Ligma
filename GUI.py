@@ -9,23 +9,27 @@ def Fenster():
     """
     Erstellt ein Fenster mit Willkommen und Buttons zu den anderen Teilen des Programms
     """
+    global Keypfad # Globale Variablen initialisieren
+    global DateiVerpfad
+    
+
     if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
         if os.path.exists(os.path.expanduser('~\\Ligma\\Icon_Ligma.ico')):
             Hauptfenster.iconbitmap(os.path.expanduser('~\\Ligma\\Icon_Ligma.ico'))
         elif os.path.exists('Icon_Ligma.ico'):
             Hauptfenster.iconbitmap('Icon_Ligma.ico')
 
-    for element in Hauptfenster.winfo_children(): 
+    for element in Hauptfenster.winfo_children(): # Elemente des Fensters von anderen Funktionen werden entfernt
         element.destroy()
     Hauptfenster.title('Ligma')
 
-    tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200', y='75', anchor='center')
+    tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200', y='75', anchor='center') # Platzieren der GUI
     tk.Label(Hauptfenster, text='© 2024/25 MANN Industries').place(x='200', y='250', anchor='center')
     tk.Button(Hauptfenster, text='Verschlüsseln', command=Verschlüsseln).place(x='300', y='150', anchor='center')
     tk.Button(Hauptfenster, text='Entschlüsseln', command=Entschlüsseln).place(x='100', y='150', anchor='center')
     
     global FirstRun
-    if FirstRun: # ???
+    if FirstRun: # Prüfung, damit die Initialisierung des Fenster nur einmal ausgeführt wird
         Hauptfenster.geometry('400x300')
         Hauptfenster.resizable('False', 'False')
         FirstRun = False
@@ -66,35 +70,27 @@ def DateiKeyVer():
     """
     Fragt nach Speicherort der Schlüsseldatei
     """
-    global Keypfad
 
     Keytmp = filedialog.asksaveasfilename(defaultextension='.lig', filetypes=[('Schlüsseldateien', '*.lig')])
     if Keytmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
         Keypfad = Keytmp
         LKeyVer['text'] = os.path.basename(Keypfad) # Zeigt ausgewählte Datei an
     
-    try:
-        if DateiVerpfad and Keypfad:
-            Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
-    except NameError:
-        pass
+    if DateiVerpfad and Keypfad:
+        Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
 
 def DateiMessageVer():
     """
     Fragt nach der Nachrichtdatei zum Verschlüsseln und Speichert diese in Dateipfad
     """
-    global DateiVerpfad
 
     Dateitmp = filedialog.askopenfilename(filetypes=[('Textdatei', '*.txt')])
     if Dateitmp: # Failsave, wenn der Nutzer bei der Dateiauswahl auf Cancel drückt
         DateiVerpfad = Dateitmp
         LFileVer['text'] = os.path.basename(DateiVerpfad) # Zeigt ausgewählte Datei an
     
-    try:
-        if Keypfad and DateiVerpfad:
-            Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
-    except NameError:
-        pass
+    if Keypfad and DateiVerpfad:
+        Verschlüsselbutton['state'] = 'normal' # Aktiviert Versch, wenn beide Dateien ausgewählt wurden
 
 def Versch():
     """
@@ -202,6 +198,12 @@ def Entsch():
     Wird aktiv, wenn eine Schlüsseldatei und eine Verschlüsselte Datei ausgewählt wurde
     Entschlüsselt die Datei mit dem Schlüssel
     """
+    '''datei = open(DateiEntpfad, 'w', encoding='utf-8')
+    NachrichtOriginal = ''
+    for element in datei:
+        NachrichtOriginal += element
+    print(NachrichtOriginal)'''
+
     SekAnz = False
     while not SekAnz:
         SekAnz = simpledialog.askinteger('Entschlüsseln','Bitte geben sie die Anzahl der Sekundärverschlüsselungen ein: ', initialvalue=1, minvalue=0)
@@ -236,6 +238,5 @@ def Entsch():
 #=============================Code zum initialisieren=============================#
 global Hauptfenster
 Hauptfenster = tk.Tk()
-global FirstRun
 FirstRun = True
 Fenster()

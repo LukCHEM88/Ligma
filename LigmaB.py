@@ -117,9 +117,10 @@ def Entsch(Keydatei: str, Zieldatei: str) -> bool:
 
 
 #=====================Beispiele für Implementierung und Tests=====================#
-
+'''
 ZS = Versch(10, 'C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #siehe Funktionsbeschreibung und angegebene Parameter
 print(ZS) #Falls ZS = True, dann wurde die Funktion erfolgreich ausgeführt
 
 ZS = Entsch('C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #siehe Funktionsbeschreibung und angegebene Parameter
 print(ZS) #Falls ZS = True, dann wurde die Funktion erfolgreich ausgeführt
+'''
