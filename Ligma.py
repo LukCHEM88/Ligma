@@ -3,128 +3,123 @@ import os
 
 #=====================Funktionen=====================#
 
-def Vereinzeln(ZKette: str) -> list:
+def Versch(Anzahl: int, Keydatei: str, Zieldatei: str) -> bool:
     """
-    Schreibt alle in einer gegebenen Zeichenkette vorkommenden verschiedenen Zeichen in eine Liste.\n
-    ZKette = Zeichenkette, welche genutzt werden soll
+    Schreibt eine bestimmte Anzahl an zufälligen Zeichen in eine Datei, welche durch die Schlüsseldatei wieder rückgängig gemacht werden kann.
+    Anzahl = integer, welche die Anzahl der zufälligen Zeichen angibt
+    Keydatei = string/Pfad, welcher zur benötigten Key-Datei führt
+    Zieldatei = string/Pfad, welcher zur benötigten (*.ball)-Datei führt
     """
-    Liste = []
-    for Element in ZKette:
-        if not Element in Liste:
-            Liste.append(Element)
-    return Liste
+    if (Anzahl < 0): #Umkehrung der Variable 'Anzahl', falls diese negativ ist
+        Anzahl = -Anzahl
+    if (not os.path.exists(Keydatei)) or (not os.path.exists(Zieldatei)) or (Anzahl < 1): #Kontrolle, ob alle Parameter korrekt angegeben wurden
+        return False
 
-def Codieren(Zeichen: str, Anzahl: int, Richtung: int) -> str:
-    """
-    Nimmt ein Zeichen und schickt dieses durch 'Anzahl' viele Räder in die Richtung 'Richtung'.\n
-    Zeichen = String | Anzahl = Integer | Richtung = 0/1
-    """
-    global Rad
-    global ZEinzelt
-    global Einzelt
-    Zeichen = Umwandlung(Zeichen, Einzelt)
-    for RNummer in range(Anzahl):
-        if (Richtung == 0):
-            Zeichen = ZEinzelt[kuerzen(Zeichen - Rad[RNummer], 1)]
-            Rad[RNummer] = kuerzen(Rad[RNummer] + 1)
-        else:
-            Rad[Anzahl - RNummer - 1] = kuerzen(Rad[Anzahl - RNummer - 1] - 1, 1)
-            Zeichen = ZEinzelt[kuerzen(Zeichen + Rad[Anzahl - RNummer - 1], 1)]
-    return Einzelt[Zeichen]
-
-def Umwandlung(Zeichen: str, gesucht: list) -> int:
-    """
-    Wandelt ein gegebenes Zeichen in die dementsprechende 'gesucht'-Zahl um.\n
-    Zeichen = String, welcher umgewandelt wird\n
-    gesucht = Liste, welche nach 'Zeichen' abgesucht wird
-    """
-    for Nummer in range(len(gesucht)):
-        if gesucht[Nummer] == Zeichen:
-            Zeichen = Nummer
-            break
-    return Zeichen
-        
-def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> str:
-    """
-    Zeichenkette = String, der ver-/entschlüsselt werden soll \n
-    Schlüsseln = v/e --> v = verschlüsseln; e = entschlüsseln \n
-    AnzahlR = Anzahl an Rädern, welche beim verschlüsseln genutzt werden sollen \n
-    Keydatei1 = Pfad, welcher zum Speicherort der Keydatei führt
-    """
-    global Einzelt
-    global ZEinzelt
-    global Rad
-
-    if (Zeichenkette == '') or ((Schluesseln != 'e') and (Schluesseln != 'v')) or ((AnzahlR < 1) and (Schluesseln != 'e')) or (Keydatei == ''):
-        return '[Error: benötigte(r) Parameter nicht vorhanden]'
-
-    Rad = []
-    ZEinzelt = []
-
-    if (Schluesseln == 'v'):
-        Einzelt = Vereinzeln(Zeichenkette)
-        Einzelt.sort()
-    elif (Schluesseln == 'e'):
+    Ergebnis = '' #speichern des Inhalts der angegeben Key-Datei in Variable 'Ergebnis'
+    try:
         Datei = open(Keydatei, 'r', -1, 'utf-8')
-        Einzelt = eval(Datei.readline())
-        Datei.close()
-        Kontrolle = Vereinzeln(Zeichenkette)
-        for Zeichen in Kontrolle:
-            temp = False
-            for Zeichen1 in Einzelt:
-                if (Zeichen1 == Zeichen):
-                    temp = True
-                    break
-            if (temp == False):
-                return '[Error: (*.lig)-Datei und (*.ball)-Datei nicht Kompatibel]'
+    except:
+        return False
+    for Zeile in Datei.readlines():
+        Ergebnis += Zeile
+        if (Zeile[0] == '['):
+            temp = len(Zeile)
+    Datei.close()
 
-    for i in range(len(Einzelt)):
-            ZEinzelt.append(i)
+    Ergebnis2 = '' #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
+    try:
+        Datei = open(Zieldatei, 'r', -1, 'utf-8')
+    except:
+        return False
+    for Zeile in Datei.readlines():
+        Ergebnis2 += Zeile
+    Datei.close()
 
-    if (Schluesseln == 'v'):
-        for i in range(AnzahlR):
-            s = random.randint(0, AnzahlR)
-            Rad.append(kuerzen(s))
+    random.seed(Ergebnis) #Seed festlegen und hinzufügen von zufälligen Zeichen in Variable 'Ergebnis2'
+    for i in range(Anzahl):
+        Zahl = random.randint(0, len(Ergebnis2))
+        Zahl2 = random.randint(0, len(Ergebnis2))
+        Ergebnis2 = Ergebnis2[0:Zahl] + Ergebnis2[Zahl2] + Ergebnis2[Zahl:len(Ergebnis2)]
 
-        ZS = ''
-        for Zeichen1 in Zeichenkette:
-            ZS += Codieren(Zeichen1, AnzahlR, 0)
-
-        for i in range(len(Rad)):
-            Rad[i] = kuerzen(Rad[i])
-        
+    try: #speichern der modifizierten Key-Datei
         Datei = open(Keydatei, 'w', -1, 'utf-8')
-        Datei.write(str(Einzelt) + '\n')
-        for i in range(len(Rad)):
-            Datei.write(str(Rad[i]) + '\n')
-        Datei.close()
+    except:
+        return False
+    Datei.writelines(Ergebnis[0:temp] + str(Anzahl) + '\n' + Ergebnis[temp::])
+    Datei.close()
 
-        return ZS
-    elif (Schluesseln == 'e'):
-        if os.path.exists(Keydatei):
-            Datei = open(Keydatei, 'r', -1, 'utf-8')
+    try: #speichern der modifizierten (*.ball)-Datei
+        Datei = open(Zieldatei, 'w', -1, 'utf-8')
+    except:
+        return False
+    Datei.writelines(Ergebnis2)
+    Datei.close()
+
+    return True
+
+def Entsch(Keydatei: str, Zieldatei: str) -> bool:
+    """
+    Löscht eine bestimmte Anzahl an zufälligen Zeichen in eine Datei, welche mit der Schlüsseldatei bestimmt werden können.
+    Keydatei = string/Pfad, welcher zur benötigten Key-Datei führt
+    Zieldatei = string/Pfad, welcher zur benötigten (*.ball)-Datei führt
+    """
+    if (not os.path.exists(Keydatei)) or (not os.path.exists(Zieldatei)): #Kontrolle, ob alle Parameter korrekt angegeben wurden
+        return False
+    
+    Ergebnis = '' #speichern des Inhalts der angegeben Key-Datei in Variable 'Ergebnis' und herausspeichern der Variable 'Anzahl' aus Key-Datei
+    Anzahl = -1
+    try:
+        Datei = open(Keydatei, 'r', -1, 'utf-8')
+    except:
+        return False
+    for Zeile in Datei.readlines():
+        if (Zeile[0] != '[') and (Anzahl == -1):
+            Anzahl = int(Zeile)
+            if (Anzahl < 1):
+                return False
         else:
-            return '[Error: Keydatei wurde nicht gefunden]'
-        AnzahlR = 0
-        for line in Datei.readlines():
-            if (line[0] != '['):
-                AnzahlR += 1
-                Rad.append(kuerzen(int(line.rstrip())))
-        Datei.close()
+            Ergebnis += Zeile
+    Datei.close()
 
-        ZS = ''
-        for Zeichen1 in Zeichenkette[::-1]:
-            ZS += Codieren(Zeichen1, AnzahlR, 1)
-        return ZS[::-1]
+    Ergebnis2 = '' #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
+    try:
+        Datei = open(Zieldatei, 'r', -1, 'utf-8')
+    except:
+        return False
+    for Zeile in Datei.readlines():
+        Ergebnis2 += Zeile
+    Datei.close()
 
-def kuerzen(zuKuerzen: int, was = 0) -> int:
-    """
-    Verschiebt einen gegebenen Integer-Wert in den vorgegbenen Bereich.
-    zuKürzen = Integer, welche verschoben werden muss
-    was = Integer, welche angibt wie viel vom vorgegebene Bereich abgezogen werden soll
-    """
-    while (zuKuerzen < 0):
-        zuKuerzen += len(Einzelt)
-    while (zuKuerzen > (len(Einzelt) - was)):
-        zuKuerzen -= len(Einzelt)
-    return zuKuerzen
+    random.seed(Ergebnis) #Seed festlegen und entfernen von bestimmten, zuvor zufälligen, Zeichen in Variable 'Ergebnis2'
+    Zahl = []
+    for i in range(Anzahl)[::-1]:
+        Zahl.append(random.randint(0, len(Ergebnis2) - i))
+        random.randint(0, len(Ergebnis2) - i)
+    Zahl = Zahl[::-1]
+    for Zahli in Zahl:
+        Ergebnis2 = Ergebnis2[0:Zahli] + Ergebnis2[Zahli + 1:len(Ergebnis2)]
+
+    try: #speichern der modifizierten Key-Datei
+        Datei = open(Keydatei, 'w', -1, 'utf-8')
+    except:
+        return False
+    Datei.writelines(Ergebnis)
+    Datei.close()
+
+    try: #speichern der modifizierten (*.ball)-Datei
+        Datei = open(Zieldatei, 'w', -1, 'utf-8')
+    except:
+        return False
+    Datei.writelines(Ergebnis2)
+    Datei.close()
+    
+    return True
+
+
+#=====================Beispiele für Implementierung und Tests=====================#
+
+ZS = Versch(10, 'C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #siehe Funktionsbeschreibung und angegebene Parameter
+print(ZS) #Falls ZS = True, dann wurde die Funktion erfolgreich ausgeführt
+
+ZS = Entsch('C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #siehe Funktionsbeschreibung und angegebene Parameter
+print(ZS) #Falls ZS = True, dann wurde die Funktion erfolgreich ausgeführt
