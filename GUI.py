@@ -1,6 +1,6 @@
 # Import benötigter Module
 import tkinter as tk
-from tkinter import filedialog, simpledialog, messagebox
+from tkinter import filedialog, simpledialog, messagebox, ttk
 import os, platform
 import Ligma, LigmaB
 
@@ -8,14 +8,11 @@ import Ligma, LigmaB
 def Darkmode_Check_Windows():
     import ctypes
     try:
-        key = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize"
-        reg = ctypes.windll.advapi32.RegOpenKeyExW(ctypes.c_uint(0x80000001), key, 0, ctypes.c_uint(0x20019), ctypes.pointer(ctypes.c_uint()))
-        value = ctypes.c_uint()
-        ctypes.windll.advapi32.RegQueryValueExW(reg, "AppsUseLightTheme", None, None, ctypes.byref(value), None)
-        ctypes.windll.advapi32.RegCloseKey(reg)
-        return value.value == 0
+        color = ctypes.windll.dwmapi.GetColorizationColor()
+        # Wenn der Hintergrundfarbwert dunkel ist, gehe davon aus, dass der Dunkelmodus aktiv ist
+        return color & 0x000000FF < 128
     except Exception as e:
-        return False
+        return None
 def Darkmode_Check_macOS():
     from subprocess import check_output
     try:
@@ -26,7 +23,8 @@ def Darkmode_Check_macOS():
         return False
 
 if platform.system() == 'Windows':
-    Darkmode = Darkmode_Check_Windows()
+    #Darkmode = Darkmode_Check_Windows()
+    Darkmode = True
 if platform.system() == 'Darwin':
     Darkmode = Darkmode_Check_macOS()
 
@@ -48,11 +46,30 @@ def Fenster():
         element.destroy()
     Hauptfenster.title('Ligma')
 
-    tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware').place(x='200', y='75', anchor='center') # Platzieren der GUI
-    tk.Label(Hauptfenster, text='© 2024/25 MANN Industries').place(x='200', y='250', anchor='center')
-    tk.Button(Hauptfenster, text='Verschlüsseln', command=Verschlüsseln).place(x='300', y='150', anchor='center')
-    tk.Button(Hauptfenster, text='Entschlüsseln', command=Entschlüsseln).place(x='100', y='150', anchor='center')
+    Label1 = tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware')
+    Label1.place(x='200', y='75', anchor='center') # Platzieren der GUI
+    Label2 = tk.Label(Hauptfenster, text='© 2024/25 MANN Industries')
+    Label2.place(x='200', y='250', anchor='center')
+    Button1 = tk.Button(Hauptfenster, text='Verschlüsseln', command=Verschlüsseln)
+    Button1.place(x='300', y='150', anchor='center')
+    Button2 = tk.Button(Hauptfenster, text='Entschlüsseln', command=Entschlüsseln)
+    Button2.place(x='100', y='150', anchor='center')
     
+    if Darkmode:
+        #style = ttk.Style()
+        #style.configure('TFrame', background='black')
+        #frame = ttk.Frame(Hauptfenster)
+        #frame.pack(side='top', fill='both', expand=True)
+        Hauptfenster.configure(bg='black')
+        Hauptfenster.configure(highlightbackground='black')
+        Label1.configure(bg='black')
+        Label2.configure(bg='black')
+        Label1.configure(fg='white')
+        Label2.configure(fg='white')
+        Button1.configure(highlightbackground='black')
+        Button2.configure(highlightbackground='black')
+
+
     global FirstRun
     if FirstRun: # Prüfung, damit die Initialisierung des Fenster nur einmal ausgeführt wird
         Hauptfenster.geometry('400x300')
