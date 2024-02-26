@@ -25,11 +25,11 @@ def Codieren(Zeichen: str, Anzahl: int, Richtung: int) -> str:
     Zeichen = Umwandlung(Zeichen, Einzelt)
     for RNummer in range(Anzahl):
         if (Richtung == 0): #falls verschlüsseln:
-            Zeichen = ZEinzelt[kuerzen(Zeichen - Rad[RNummer], 1)] #Zahl, welche in Variable 'Zeichen' gespeichert is wird 'gerädert' in positive Richtung via des Mechanismus der Enigma
-            Rad[RNummer] = kuerzen(Rad[RNummer] + 1) #Rad, welches genutzt wurde, wird in positive Richtung weitergedreht
+            Zeichen = ZEinzelt[(Zeichen - Rad[RNummer]) % len(Einzelt)] #Zahl, welche in Variable 'Zeichen' gespeichert is wird 'gerädert' in positive Richtung via des Mechanismus der Enigma
+            Rad[RNummer] = Rad[RNummer] % len(Einzelt) #Rad, welches genutzt wurde, wird in positive Richtung weitergedreht
         elif (Richtung == 1): #falls entschlüsseln:
-            Rad[Anzahl - RNummer - 1] = kuerzen(Rad[Anzahl - RNummer - 1] - 1, 1) #Zahl, welche in Variable 'Zeichen' gespeichert is wird 'gerädert' in negative Richtung via des Mechanismus der Enigma
-            Zeichen = ZEinzelt[kuerzen(Zeichen + Rad[Anzahl - RNummer - 1], 1)] #Rad, welches genutzt wurde, wird in negative Richtung weitergedreht
+            Rad[Anzahl - RNummer - 1] = (Rad[Anzahl - RNummer - 1]) % len(Einzelt) #Zahl, welche in Variable 'Zeichen' gespeichert is wird 'gerädert' in negative Richtung via des Mechanismus der Enigma
+            Zeichen = ZEinzelt[(Zeichen + Rad[Anzahl - RNummer - 1]) % len(Einzelt)] #Rad, welches genutzt wurde, wird in negative Richtung weitergedreht
     return Einzelt[Zeichen]
 
 def Umwandlung(Zeichen: str, gesucht: list) -> int:
@@ -43,18 +43,6 @@ def Umwandlung(Zeichen: str, gesucht: list) -> int:
             Zeichen = Nummer
             break
     return Zeichen
-
-def kuerzen(zuKuerzen: int, was = 0) -> int:
-    """
-    Verschiebt einen gegebenen Integer-Wert in den vorgegbenen Bereich.
-    zuKürzen = Integer, welche verschoben werden muss
-    was = Integer, welche angibt wie viel vom vorgegebene Bereich abgezogen werden soll
-    """
-    while (zuKuerzen < 0):
-        zuKuerzen += len(Einzelt)
-    while (zuKuerzen > (len(Einzelt) - was)):
-        zuKuerzen -= len(Einzelt)
-    return zuKuerzen
 
 def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> str:
     """
@@ -102,14 +90,14 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
     if (Schluesseln == 'v'): #Räder hinzufügen, Zeichenkette verschlüsseln, 'Rad' kürzen, Key-Datei speichern (+ Kontrolle) und verschlüsselter Text zurückgeben
         for i in range(AnzahlR):
             s = random.randint(0, AnzahlR)
-            Rad.append(kuerzen(s))
+            Rad.append(s % len(Einzelt))
 
         ZS = ''
         for Zeichen1 in Zeichenkette:
             ZS += Codieren(Zeichen1, AnzahlR, 0)
 
         for i in range(len(Rad)):
-            Rad[i] = kuerzen(Rad[i])
+            Rad[i] = Rad[i] % len(Einzelt)
         
         try:
             Datei = open(Keydatei, 'w', -1, 'utf-8')
@@ -127,7 +115,7 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
         for line in Datei.readlines():
             if (line[0] != '['):
                 AnzahlR += 1
-                Rad.append(kuerzen(int(line.rstrip())))
+                Rad.append(int(line.rstrip()) % len(Einzelt))
         Datei.close()
 
         ZS = ''
@@ -137,7 +125,7 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '') -> 
 
 
 #=====================Beispiele für Implementierung und Tests=====================#
-
+'''
 Ergebnis = ''
 Datei = open('C:\\Python\\Ligma\\Core\\test.txt', 'r', -1, 'utf-8') #speichert gesamten Inhalt von 'test.txt' in Variable 'Ergebnis'
 for zeile in Datei.readlines():
@@ -153,3 +141,4 @@ Datei.close()
 
 Ergebnis = Raedern(Ergebnis, 'e', 0, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
 print(Ergebnis)
+'''
