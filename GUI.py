@@ -1,34 +1,36 @@
 # Import benötigter Module
 import tkinter as tk
 from tkinter import filedialog, simpledialog, messagebox, ttk
-import os, platform
+import os, platform, darkdetect
 import Ligma, LigmaB
+print('darkdetect', darkdetect.isDark())
 
 #=====================Darkmode-Check=====================#
-def Darkmode_Check_Windows():
+def Darkmode_Check_Windows(): # Wenn das Programm auf Windows ausgeführt wird, wird ermittelt, ob das System im Darkmode ist
+    # FIXME: Work in progress
     import ctypes
     try:
-        color = ctypes.windll.dwmapi.GetColorizationColor()
-        # Wenn der Hintergrundfarbwert dunkel ist, gehe davon aus, dass der Dunkelmodus aktiv ist
-        return color & 0x000000FF < 128
-    except Exception as e:
-        return None
-def Darkmode_Check_macOS():
+        # Windows Vista und höher
+        return ctypes.windll.shell32.IsUserThemingEnabled()
+    except:
+        # Windows XP und früher
+        return ctypes.windll.uxtheme.IsAppThemed()
+def Darkmode_Check_macOS(): # Wenn das Programm auf macOS ausgeführt wird, wird ermittelt, ob das System im Darkmode ist
     from subprocess import check_output
     try:
-        # Verwende den `defaults`-Befehl, um den aktuellen Modus abzurufen
         result = check_output(["defaults", "read", "-g", "AppleInterfaceStyle"]).decode().strip()
         return result.lower() == "dark"
     except Exception as e:
         return False
+def Darkmode_Check(): # Betriebssystem wird ermittelt und dessen Darkmode_Check ausgeführt
+    global Darkmode
+    if platform.system() == 'Windows':
+        #Darkmode = Darkmode_Check_Windows()
+        Darkmode = True
+    if platform.system() == 'Darwin':
+        Darkmode = Darkmode_Check_macOS()
 
-if platform.system() == 'Windows':
-    #Darkmode = Darkmode_Check_Windows()
-    Darkmode = True
-if platform.system() == 'Darwin':
-    Darkmode = Darkmode_Check_macOS()
-
-print('Darkmode =',Darkmode)
+#print('Darkmode =',Darkmode)
 
 #=============================Funktionen=============================#
 def Fenster():
@@ -46,29 +48,35 @@ def Fenster():
         element.destroy()
     Hauptfenster.title('Ligma')
 
-    Label1 = tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware')
-    Label1.place(x='200', y='75', anchor='center') # Platzieren der GUI
-    Label2 = tk.Label(Hauptfenster, text='© 2024/25 MANN Industries')
-    Label2.place(x='200', y='250', anchor='center')
-    Button1 = tk.Button(Hauptfenster, text='Verschlüsseln', command=Verschlüsseln)
-    Button1.place(x='300', y='150', anchor='center')
-    Button2 = tk.Button(Hauptfenster, text='Entschlüsseln', command=Entschlüsseln)
-    Button2.place(x='100', y='150', anchor='center')
+    LabelWillkommen = tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware') # Platzieren der GUI
+    LabelWillkommen.place(x='200', y='75', anchor='center')
+    LabelCopyright = tk.Label(Hauptfenster, text='© 2024/25 MANN Industries')
+    LabelCopyright.place(x='200', y='250', anchor='center')
+    ButtonVer = tk.Button(Hauptfenster, text='Verschlüsseln', command=Verschlüsseln)
+    ButtonVer.place(x='300', y='150', anchor='center')
+    ButtonEnt = tk.Button(Hauptfenster, text='Entschlüsseln', command=Entschlüsseln)
+    ButtonEnt.place(x='100', y='150', anchor='center')
     
-    if Darkmode:
-        #style = ttk.Style()
-        #style.configure('TFrame', background='black')
-        #frame = ttk.Frame(Hauptfenster)
-        #frame.pack(side='top', fill='both', expand=True)
-        Hauptfenster.configure(bg='black')
-        Hauptfenster.configure(highlightbackground='black')
-        Label1.configure(bg='black')
-        Label2.configure(bg='black')
-        Label1.configure(fg='white')
-        Label2.configure(fg='white')
-        Button1.configure(highlightbackground='black')
-        Button2.configure(highlightbackground='black')
-
+    Darkmode_Check() # Darkmode wird ermittelt
+    if Darkmode: # Darkmode wird eingestellt
+        # TODO: Window Border
+        Hauptfenster.configure(bg='#323232')
+        Hauptfenster.configure(highlightbackground='#323232')
+        LabelWillkommen.configure(bg='#323232')
+        LabelCopyright.configure(bg='#323232')
+        LabelWillkommen.configure(fg='white')
+        LabelCopyright.configure(fg='white')
+        ButtonVer.configure(highlightbackground='#323232')
+        ButtonEnt.configure(highlightbackground='#323232')
+    else:
+        Hauptfenster.configure(bg='#ECECEC')
+        Hauptfenster.configure(highlightbackground='#ECECEC')
+        ButtonVer.configure(highlightbackground='#ECECEC')
+        ButtonEnt.configure(highlightbackground='#ECECEC')
+        LabelWillkommen.configure(bg='#ECECEC')
+        LabelCopyright.configure(bg='#ECECEC')
+        LabelWillkommen.configure(fg='black')
+        LabelCopyright.configure(fg='black')
 
     global FirstRun
     if FirstRun: # Prüfung, damit die Initialisierung des Fenster nur einmal ausgeführt wird
@@ -86,22 +94,47 @@ def Verschlüsseln():
         element.destroy()
     Hauptfenster.title('Ligma - Verschlüsseln')
 
-    tk.Button(Hauptfenster, text='← Zurück', command=Fenster).place(x='25', y='25') # Platzieren der GUI
-    tk.Button(Hauptfenster, text='Erstellen', command=DateiKeyVer).place(x='100', y='150', anchor='center')
-    tk.Button(Hauptfenster, text='Durchsuchen', command=DateiMessageVer).place(x='300', y='150', anchor='center')
+    Buttonback = tk.Button(Hauptfenster, text='← Zurück', command=Fenster) # Platzieren der GUI
+    Buttonback.place(x='25', y='25')
+    Buttonkeyver = tk.Button(Hauptfenster, text='Erstellen', command=DateiKeyVer)
+    Buttonkeyver.place(x='100', y='150', anchor='center')
+    Buttonmesver = tk.Button(Hauptfenster, text='Durchsuchen', command=DateiMessageVer)
+    Buttonmesver.place(x='300', y='150', anchor='center')
     
     global Verschlüsselbutton
     Verschlüsselbutton = tk.Button(Hauptfenster, text='Verschlüsseln', state='disabled', command=Versch) # Button erst deaktiviert, damit die Funktion erst ausgeführt werden kann, wenn Dateien gewählt wurden
     Verschlüsselbutton.place(x='200', y='250', anchor='center')
-    
     global LKeyVer
     LKeyVer = tk.Label(Hauptfenster, text='Kein Schlüssel ausgewählt', anchor='center')
     LKeyVer.place(x='100', y='120', width='180', anchor='center')
-    
     global LFileVer
     LFileVer = tk.Label(Hauptfenster, text='Keine Nachricht ausgewählt', anchor='center')
     LFileVer.place(x='300', y='120', width='180', anchor='center')
     
+    Darkmode_Check() # Darkmode wird ermittelt
+    if Darkmode: # Darkmode wird eingestellt
+        Hauptfenster.configure(bg='#323232')
+        Hauptfenster.configure(highlightbackground='#323232')
+        Buttonback.configure(highlightbackground='#323232')
+        Buttonkeyver.configure(highlightbackground='#323232')
+        Buttonmesver.configure(highlightbackground='#323232')
+        Verschlüsselbutton.configure(highlightbackground='#323232')
+        LKeyVer.configure(bg='#323232')
+        LKeyVer.configure(fg='white')
+        LFileVer.configure(bg='#323232')
+        LFileVer.configure(fg='white')
+    else:
+        Hauptfenster.configure(bg='#ECECEC')
+        Hauptfenster.configure(highlightbackground='#ECECEC')
+        Buttonback.configure(highlightbackground='#ECECEC')
+        Buttonkeyver.configure(highlightbackground='#ECECEC')
+        Buttonmesver.configure(highlightbackground='#ECECEC')
+        Verschlüsselbutton.configure(highlightbackground='#ECECEC')
+        LKeyVer.configure(bg='#ECECEC')
+        LKeyVer.configure(fg='black')
+        LFileVer.configure(bg='#ECECEC')
+        LFileVer.configure(fg='black')
+
     try:
         if Keypfad:
             LKeyVer['text'] = os.path.basename(Keypfad) # Fals aus einer anderen Funktion schonmal ein Key gewählt wurde wird er angezeigt
@@ -193,21 +226,46 @@ def Entschlüsseln():
         element.destroy()
     Hauptfenster.title('Ligma - Entschlüsseln')
     
-    tk.Button(Hauptfenster, text='← Zurück', command=Fenster).place(x='25', y='25') # GUI wird platziert
-    tk.Button(Hauptfenster, text='Durchsuchen', command=DateiKeyEnt).place(x='100', y='150', anchor='center')
-    tk.Button(Hauptfenster, text='Durchsuchen', command=DateiMessageEnt).place(x='300', y='150', anchor='center')
+    Buttonback = tk.Button(Hauptfenster, text='← Zurück', command=Fenster)
+    Buttonback.place(x='25', y='25') # GUI wird platziert
+    Buttonkeyent = tk.Button(Hauptfenster, text='Durchsuchen', command=DateiKeyEnt)
+    Buttonkeyent.place(x='100', y='150', anchor='center')
+    Buttonmesent = tk.Button(Hauptfenster, text='Durchsuchen', command=DateiMessageEnt)
+    Buttonmesent.place(x='300', y='150', anchor='center')
     
     global Entschlüsselbutton
     Entschlüsselbutton = tk.Button(Hauptfenster, text='Entschlüsseln', state='disabled', command=Entsch) # Button erst deaktiviert, damit die Funktion erst ausgeführt werden kann, wenn Dateien gewählt wurden
     Entschlüsselbutton.place(x='200', y='250', anchor='center')
-    
     global LKeyEnt
     LKeyEnt = tk.Label(Hauptfenster, text='Kein Schlüssel ausgewählt', anchor='center')
     LKeyEnt.place(x='100', y='120', width='180', anchor='center')
-    
     global LFileEnt
     LFileEnt = tk.Label(Hauptfenster, text='Keine Nachricht ausgewählt', anchor='center')
     LFileEnt.place(x='300', y='120', width='180', anchor='center')
+
+    Darkmode_Check() # Darkmode wird ermittelt
+    if Darkmode: # Darkmode wird eingestellt
+        Hauptfenster.configure(bg='#323232')
+        Hauptfenster.configure(highlightbackground='#323232')
+        Buttonback.configure(highlightbackground='#323232')
+        Buttonkeyent.configure(highlightbackground='#323232')
+        Buttonmesent.configure(highlightbackground='#323232')
+        Entschlüsselbutton.configure(highlightbackground='#323232')
+        LKeyEnt.configure(bg='#323232')
+        LKeyEnt.configure(fg='white')
+        LFileEnt.configure(bg='#323232')
+        LFileEnt.configure(fg='white')
+    else:
+        Hauptfenster.configure(bg='#ECECEC')
+        Hauptfenster.configure(highlightbackground='#ECECEC')
+        Buttonback.configure(highlightbackground='#ECECEC')
+        Buttonkeyent.configure(highlightbackground='#ECECEC')
+        Buttonmesent.configure(highlightbackground='#ECECEC')
+        Entschlüsselbutton.configure(highlightbackground='#ECECEC')
+        LKeyEnt.configure(bg='#ECECEC')
+        LKeyEnt.configure(fg='black')
+        LFileEnt.configure(bg='#ECECEC')
+        LFileEnt.configure(fg='black')
     
     try:
         if Keypfad:
@@ -266,14 +324,14 @@ def Entsch():
         KeyOriginal += element
     datei.close()
 
-    SekAnz = False
-    while not SekAnz: # Failsave, fals Cancel
-        SekAnz = simpledialog.askinteger('Entschlüsseln','Bitte geben sie die Anzahl der Sekundärverschlüsselungen ein: ', initialvalue=1, minvalue=0) # Fragt nach Anzahl der Sekundärverschlüsselungen
-        if SekAnz == 0: # Da 0 als False gewertet wird, muss sie extra behandelt werden
-            break
+    #SekAnz = False
+    #while not SekAnz: # Failsave, fals Cancel
+    #    SekAnz = simpledialog.askinteger('Entschlüsseln','Bitte geben sie die Anzahl der Sekundärverschlüsselungen ein: ', initialvalue=1, minvalue=0) # Fragt nach Anzahl der Sekundärverschlüsselungen
+    #    if SekAnz == 0: # Da 0 als False gewertet wird, muss sie extra behandelt werden
+    #        break
     
-    for i in range(SekAnz):
-        LigmaB.Entsch(Keypfad, DateiEntpfad) # Sekundärverschlüsselungen werden entfernt
+    #for i in range(SekAnz):
+    #    LigmaB.Entsch(Keypfad, DateiEntpfad) # Sekundärverschlüsselungen werden entfernt
     
     datei = open(DateiEntpfad, 'r', encoding='utf-8') # Verschlüsselte Datei wird eingelesen und in ball gespeichert
     ball = ''
@@ -281,7 +339,7 @@ def Entsch():
         ball += zeile
     datei.close()
 
-    Text = Ligma.Raedern(ball, 'e', 0, Keypfad) # ball wird entschlüsselt
+    Text = Ligma.Raedern(ball, 'e', 0, Keypfad, DateiEntpfad) # ball wird entschlüsselt
     if Text == '[Error: Keydatei wurde nicht gefunden]': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
         messagebox.showerror('Entschlüsseln', Text)
     elif Text == '[Error: (*.lig)-Datei und (*.ball)-Datei nicht Kompatibel]':

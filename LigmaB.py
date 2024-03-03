@@ -6,9 +6,9 @@ import os
 def Versch(Anzahl: int, Keydatei: str, Zieldatei: str) -> bool:
     """
     Schreibt eine bestimmte Anzahl an zufälligen Zeichen in eine Datei, welche durch die Schlüsseldatei wieder rückgängig gemacht werden kann.
-    Anzahl = integer, welche die Anzahl der zufälligen Zeichen angibt
-    Keydatei = string/Pfad, welcher zur benötigten Key-Datei führt
-    Zieldatei = string/Pfad, welcher zur benötigten (*.ball)-Datei führt
+    Anzahl = Anzahl(int) der zufälligen Zeichen angibt
+    Keydatei = Pfad(str), welcher zur benötigten Key-Datei führt
+    Zieldatei = Pfad(str), welcher zur benötigten (*.ball)-Datei führt
     """
     if (Anzahl < 0): #Umkehrung der Variable 'Anzahl', falls diese negativ ist
         Anzahl = -Anzahl
@@ -22,8 +22,8 @@ def Versch(Anzahl: int, Keydatei: str, Zieldatei: str) -> bool:
         return False
     for Zeile in Datei.readlines():
         Ergebnis += Zeile
-        if (Zeile[0] == '['):
-            temp = len(Zeile)
+        if (Zeile[0] != '['):
+            temp = len(Ergebnis) - len(Zeile)
     Datei.close()
 
     Ergebnis2 = '' #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
@@ -37,8 +37,8 @@ def Versch(Anzahl: int, Keydatei: str, Zieldatei: str) -> bool:
 
     random.seed(Ergebnis) #Seed festlegen und hinzufügen von zufälligen Zeichen in Variable 'Ergebnis2'
     for i in range(Anzahl):
-        Zahl = random.randint(0, len(Ergebnis2))
-        Zahl2 = random.randint(0, len(Ergebnis2))
+        Zahl = random.randint(0, len(Ergebnis2) - 1)
+        Zahl2 = random.randint(0, len(Ergebnis2) - 1)
         Ergebnis2 = Ergebnis2[0:Zahl] + Ergebnis2[Zahl2] + Ergebnis2[Zahl:len(Ergebnis2)]
 
     try: #speichern der modifizierten Key-Datei
@@ -93,8 +93,8 @@ def Entsch(Keydatei: str, Zieldatei: str) -> bool:
     random.seed(Ergebnis) #Seed festlegen und entfernen von bestimmten, zuvor zufälligen, Zeichen in Variable 'Ergebnis2'
     Zahl = []
     for i in range(Anzahl)[::-1]:
-        Zahl.append(random.randint(0, len(Ergebnis2) - i))
-        random.randint(0, len(Ergebnis2) - i)
+        Zahl.append(random.randint(0, len(Ergebnis2) - 2 - i))
+        random.randint(0, len(Ergebnis2) - 2 - i)
     Zahl = Zahl[::-1]
     for Zahli in Zahl:
         Ergebnis2 = Ergebnis2[0:Zahli] + Ergebnis2[Zahli + 1:len(Ergebnis2)]
