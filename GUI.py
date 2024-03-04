@@ -3,34 +3,6 @@ import tkinter as tk
 from tkinter import filedialog, simpledialog, messagebox, ttk
 import os, platform, darkdetect
 import Ligma, LigmaB
-print('darkdetect', darkdetect.isDark())
-
-#=====================Darkmode-Check=====================#
-def Darkmode_Check_Windows(): # Wenn das Programm auf Windows ausgeführt wird, wird ermittelt, ob das System im Darkmode ist
-    # FIXME: Work in progress
-    import ctypes
-    try:
-        # Windows Vista und höher
-        return ctypes.windll.shell32.IsUserThemingEnabled()
-    except:
-        # Windows XP und früher
-        return ctypes.windll.uxtheme.IsAppThemed()
-def Darkmode_Check_macOS(): # Wenn das Programm auf macOS ausgeführt wird, wird ermittelt, ob das System im Darkmode ist
-    from subprocess import check_output
-    try:
-        result = check_output(["defaults", "read", "-g", "AppleInterfaceStyle"]).decode().strip()
-        return result.lower() == "dark"
-    except Exception as e:
-        return False
-def Darkmode_Check(): # Betriebssystem wird ermittelt und dessen Darkmode_Check ausgeführt
-    global Darkmode
-    if platform.system() == 'Windows':
-        #Darkmode = Darkmode_Check_Windows()
-        Darkmode = True
-    if platform.system() == 'Darwin':
-        Darkmode = Darkmode_Check_macOS()
-
-#print('Darkmode =',Darkmode)
 
 #=============================Funktionen=============================#
 def Fenster():
@@ -57,8 +29,7 @@ def Fenster():
     ButtonEnt = tk.Button(Hauptfenster, text='Entschlüsseln', command=Entschlüsseln)
     ButtonEnt.place(x='100', y='150', anchor='center')
     
-    Darkmode_Check() # Darkmode wird ermittelt
-    if Darkmode: # Darkmode wird eingestellt
+    if darkdetect.isDark(): # Darkmode wird eingestellt
         # TODO: Window Border
         Hauptfenster.configure(bg='#323232')
         Hauptfenster.configure(highlightbackground='#323232')
@@ -111,8 +82,7 @@ def Verschlüsseln():
     LFileVer = tk.Label(Hauptfenster, text='Keine Nachricht ausgewählt', anchor='center')
     LFileVer.place(x='300', y='120', width='180', anchor='center')
     
-    Darkmode_Check() # Darkmode wird ermittelt
-    if Darkmode: # Darkmode wird eingestellt
+    if darkdetect.isDark(): # Darkmode wird eingestellt
         Hauptfenster.configure(bg='#323232')
         Hauptfenster.configure(highlightbackground='#323232')
         Buttonback.configure(highlightbackground='#323232')
@@ -243,8 +213,7 @@ def Entschlüsseln():
     LFileEnt = tk.Label(Hauptfenster, text='Keine Nachricht ausgewählt', anchor='center')
     LFileEnt.place(x='300', y='120', width='180', anchor='center')
 
-    Darkmode_Check() # Darkmode wird ermittelt
-    if Darkmode: # Darkmode wird eingestellt
+    if darkdetect.isDark(): # Darkmode wird eingestellt
         Hauptfenster.configure(bg='#323232')
         Hauptfenster.configure(highlightbackground='#323232')
         Buttonback.configure(highlightbackground='#323232')
@@ -340,16 +309,8 @@ def Entsch():
     datei.close()
 
     Text = Ligma.Raedern(ball, 'e', 0, Keypfad, DateiEntpfad) # ball wird entschlüsselt
-    if Text == '[Error: Keydatei wurde nicht gefunden]': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
+    if Text[:7] == '[Error:': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
         messagebox.showerror('Entschlüsseln', Text)
-    elif Text == '[Error: (*.lig)-Datei und (*.ball)-Datei nicht Kompatibel]':
-        messagebox.showerror('Entschlüsseln', Text)
-    elif Text == '[Error: benötigte(r) Parameter nicht vorhanden]':
-        messagebox.showerror('Entschlüsseln', Text)
-    elif Text == '[Error: Keydatei kann nicht geöffnet werden]':
-        messagebox.showerror('Verschlüsseln', Text)
-    elif Text == '[Error: Keydatei kann nicht überschrieben/erstellt werden]':
-        messagebox.showerror('Verschlüsseln', Text)
     
     else:
         Savepfad = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Textdateien', '*.txt')]) # Fragt nach Speicherort

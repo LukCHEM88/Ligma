@@ -56,6 +56,13 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '', Bal
     global Verschiebung
     global Rad
 
+    #Zeichenkettetmp = ''
+    #datei = open(Zeichenkette, 'r', encoding='utf-8')
+    #for zeile in datei:
+    #    Zeichenkettetmp += zeile
+    #Zeichenkette = Zeichenkettetmp
+    #datei.close()
+
     if (Zeichenkette == '') or ((Schluesseln != 'e') and (Schluesseln != 'v')) or ((AnzahlR < 1) and (Schluesseln != 'e')) or (Keydatei == ''): #Check, ob alle Parameter genügend angegeben sind
         return '[Error: benötigte(r) Parameter nicht vorhanden]'
 
@@ -142,6 +149,16 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '', Bal
                         LigmaB.Entsch(Keydatei, Balldatei)
                 except:
                     return '[Error: LigmaB konnte nicht korrekt angesteuert werden]'
+                
+                try:
+                    temp = ''
+                    Datei = open('Testdateien/Nachricht.ball', 'r', -1, 'utf-8') #speichert gesamten Inhalt von 'test.txt' in Variable 'Ergebnis'
+                    for zeile in Datei.readlines():
+                        temp += zeile
+                    Datei.close()
+                    Zeichenkette = temp
+                except:
+                    return '[Error: Deine Mudda'
             else:
                 return '[Error: (*.ball)-Datei muss durch aktive Sekundaerverschluesselung angegeben werden]'
 
@@ -154,25 +171,29 @@ def Raedern(Zeichenkette = '', Schluesseln = '', AnzahlR = 0, Keydatei = '', Bal
 
 
 #=====================Beispiele für Implementierung und Tests=====================#
-'''
 Ergebnis = ''
 Datei = open('Testdateien/Text.txt', 'r', -1, 'utf-8') #speichert gesamten Inhalt von 'test.txt' in Variable 'Ergebnis'
 for zeile in Datei.readlines():
     Ergebnis += zeile
 Datei.close()
 
-Ergebnis = Raedern(Ergebnis, 'v', 2000, 'Testdateien/Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
+Ergebnis = Raedern(Ergebnis, 'v', 200, 'Testdateien/Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
 print(Ergebnis)
+
+Datei = open('Testdateien/Nachricht.ball', 'w', -1, 'utf-8') #speichert zuvor verschlüsselten Text in Datei 'test.ball'
+Datei.write(Ergebnis)
+Datei.close()
 
 LigmaB.Versch(5, 'Testdateien/Key.lig', 'Testdateien/Nachricht.ball')
 LigmaB.Versch(5, 'Testdateien/Key.lig', 'Testdateien/Nachricht.ball')
 LigmaB.Versch(7, 'Testdateien/Key.lig', 'Testdateien/Nachricht.ball')
 LigmaB.Versch(8, 'Testdateien/Key.lig', 'Testdateien/Nachricht.ball')
 
-Datei = open('Testdateien/Nachricht.ball', 'w', -1, 'utf-8') #speichert zuvor verschlüsselten Text in Datei 'test.ball'
-Datei.write(Ergebnis)
+Ergebnis = ''
+Datei = open('Testdateien/Nachricht.ball', 'r', -1, 'utf-8') #speichert gesamten Inhalt von 'test.txt' in Variable 'Ergebnis'
+for zeile in Datei.readlines():
+    Ergebnis += zeile
 Datei.close()
 
 Ergebnis = Raedern(Ergebnis, 'e', 0, 'Testdateien/Key.lig', 'Testdateien/Nachricht.ball') #siehe Funktionsbeschreibung und angegebene Parameter
 print(Ergebnis)
-'''
