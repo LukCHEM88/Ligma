@@ -1,8 +1,7 @@
 # Import benötigter Module
 import tkinter as tk
 from tkinter import filedialog, simpledialog, messagebox, ttk
-import os, platform, darkdetect
-import Ligma, LigmaB
+import os, platform, darkdetect, Ligma
 
 #=============================Funktionen=============================#
 def Fenster():
@@ -11,9 +10,7 @@ def Fenster():
     """
 
     if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
-        if os.path.exists(os.path.expanduser('~\\Ligma\\Icon_Ligma.ico')):
-            Hauptfenster.iconbitmap(os.path.expanduser('~\\Ligma\\Icon_Ligma.ico'))
-        elif os.path.exists('Icon_Ligma.ico'):
+        if os.path.exists('Icon_Ligma.ico'):
             Hauptfenster.iconbitmap('Icon_Ligma.ico')
 
     for element in Hauptfenster.winfo_children(): # GUI Elemente von anderen Funktionen werden entfernt
@@ -158,16 +155,10 @@ def Versch():
     
     Anz = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der Verschlüsselung ein: ', initialvalue=50, minvalue=1) # Frage nach Stärke der Verschlüsselung
     if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
-        Text = Ligma.Raedern(message, 'v', Anz, Keypfad) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
+        Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
 
-        if Text == '[Error: Keydatei wurde nicht gefunden]': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
-            messagebox.showerror('Verschlüsseln', Text)
-        elif Text == '[Error: benötigte(r) Parameter nicht vorhanden]':
-            messagebox.showerror('Verschlüsseln', Text)
-        elif Text == '[Error: Keydatei kann nicht geöffnet werden]':
-            messagebox.showerror('Verschlüsseln', '[Error: Keydatei kann nicht geöffnet werden]')
-        elif Text == '[Error: Keydatei kann nicht überschrieben/erstellt werden]':
-            messagebox.showerror('Verschlüsseln', '[Error: Keydatei kann nicht überschrieben/erstellt werden]')
+        if Text[:7] == '[Error:': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
+            messagebox.showerror('Entschlüsseln', Text)
         else:
             Savepfad = filedialog.asksaveasfilename(defaultextension='.ball', filetypes=[('Verschlüsselte Dateien', '*.ball')]) # Frage nach Speicherort der verschlüsselten Datei
             if Savepfad: # Failsave, fals Nutzer auf Cancel drückt
@@ -175,17 +166,13 @@ def Versch():
                 datei.write(Text) # Speichern
                 datei.close()
                 
-                SekAnz = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Anzahl der Sekundärverschlüsselungen an: ', initialvalue=1, minvalue=0) # Frage nach Menge der Sekundärverschlüsselungen
                 message = len(message)
-                if SekAnz: # Failsave, fals Cancel
-                    for i in range(SekAnz):
-                        Anz2 = False
-                        while not Anz2: # Failsave, fals Cancel
-                            Anz2 = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der ' + str(i+1) + '. Sekundärverschlüsselung ein: ', initialvalue=message//10, minvalue=1, maxvalue=message//2) # Frage nach Stärke der Sekundäverschlüsselung. Standartmäßig 10%.
-                            if not Anz2:
-                                messagebox.showerror('Verschlüsseln', 'Sie müssen einen Wert eingeben.') # Nutzer wird informiert, dass er etwas eingeben muss.
-                        message += Anz2
-                        LigmaB.Versch(Anz2,Keypfad,Savepfad) # Nutzereingaben werden an LigmaB weitergegeben zum Sekundärverschüsseln
+                Anz2 = False
+                while not Anz2: # Failsave, fals Cancel
+                    Anz2 = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der Sekundärverschlüsselung ein: ', initialvalue=message//10, minvalue=1) # Frage nach Stärke der Sekundäverschlüsselung. Standartmäßig 10%.
+                    if not Anz2:
+                        messagebox.showerror('Verschlüsseln', 'Sie müssen einen Wert eingeben.') # Nutzer wird informiert, dass er etwas eingeben muss.
+                Ligma.Sekundaer.Versch(Anz2,Keypfad,Savepfad) # Nutzereingaben werden an LigmaB weitergegeben zum Sekundärverschüsseln
 
 #=============================Enstschlüsseln-Funktionen=============================#
 def Entschlüsseln():
@@ -293,28 +280,20 @@ def Entsch():
         KeyOriginal += element
     datei.close()
 
-    #SekAnz = False
-    #while not SekAnz: # Failsave, fals Cancel
-    #    SekAnz = simpledialog.askinteger('Entschlüsseln','Bitte geben sie die Anzahl der Sekundärverschlüsselungen ein: ', initialvalue=1, minvalue=0) # Fragt nach Anzahl der Sekundärverschlüsselungen
-    #    if SekAnz == 0: # Da 0 als False gewertet wird, muss sie extra behandelt werden
-    #        break
-    
-    #for i in range(SekAnz):
-    #    LigmaB.Entsch(Keypfad, DateiEntpfad) # Sekundärverschlüsselungen werden entfernt
-    
+    Ligma.Sekundaer.Entsch(Keypfad, DateiEntpfad) # Entschlüsselt die Datei mit Ligma
+
     datei = open(DateiEntpfad, 'r', encoding='utf-8') # Verschlüsselte Datei wird eingelesen und in ball gespeichert
     ball = ''
     for zeile in datei:
         ball += zeile
     datei.close()
 
-    Text = Ligma.Raedern(ball, 'e', 0, Keypfad, DateiEntpfad) # ball wird entschlüsselt
+    Text = Ligma.Primaer.Raedern(ball, 'e', 0, Keypfad) # ball wird entschlüsselt
     if Text[:7] == '[Error:': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
         messagebox.showerror('Entschlüsseln', Text)
-    
     else:
         Savepfad = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Textdateien', '*.txt')]) # Fragt nach Speicherort
-        if Savepfad: # Failsave, fals Cance
+        if Savepfad: # Failsave, fals Cancel
             datei = open(Savepfad, 'w', encoding='utf-8') # Speichert
             datei.write(Text)
             datei.close()
