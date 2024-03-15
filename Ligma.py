@@ -1,5 +1,67 @@
 import random
 import os
+import tkinter as tk
+from tkinter import ttk
+import darkdetect, platform
+
+class Progressbar():
+    def erstellen():
+        '''
+        Erstellt ein Fenster, welches die einen Fortschrittsbalken zeigt.
+        '''
+        global ProgWindow
+        global ProgBar
+        global ProgLabel
+        global InfoLabel
+
+        ProgWindow = tk.Tk()
+        ProgWindow.title("Lädt...")
+        ProgWindow.resizable('False', 'False')
+        ProgWindow.geometry('300x100')
+        if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
+            if os.path.exists('Icon_Ligma.ico'):
+                ProgWindow.iconbitmap('Icon_Ligma.ico')
+
+        ProgBar = ttk.Progressbar(ProgWindow, orient="horizontal", length=200, mode="determinate")
+        ProgBar.place(x='150', y='50', anchor='center')
+        ProgLabel = tk.Label(ProgWindow, text="0%")
+        ProgLabel.place(x='150', y='25', anchor='center')
+        InfoLabel = tk.Label(ProgWindow, text="Starting...")
+        InfoLabel.place(x='150', y='75', anchor='center')
+
+        if darkdetect.isDark(): # Darkmode wird eingestellt
+            # TODO: Window Border
+            ProgWindow.configure(bg='#323232')
+            ProgWindow.configure(highlightbackground='#323232')
+            #style = ttk.Style()
+            #style.configure("my.Horizontal.TProgressbar", background="#323232")
+            #ProgBar.configure(style='my.Horizontal.TProgressbar')
+            # FIXME: Hintergrund PB Mac
+            ProgLabel.configure(bg='#323232')
+            ProgLabel.configure(fg='white')
+            InfoLabel.configure(bg='#323232')
+            InfoLabel.configure(fg='white')
+    def setprogress(x):
+        '''
+        Setzt den Wert des Fortschrittsbalkens
+        '''
+        ProgBar["value"] = x
+        ProgLabel["text"] = str(x) + "%"
+    def setinfo(x):
+        '''
+        Setzt den Info Text
+        '''
+        InfoLabel["text"] = x
+    def fertig():
+        '''
+        Schliesst das Fenster
+        '''
+        ProgWindow.destroy()
+
+Progressbar.erstellen()
+Progressbar.setprogress(50)
+#Progressbar.fertig()
+#Progressbar.erstellen()
 
 #=====================Klassen/Funktionen=====================#
 
@@ -136,7 +198,29 @@ class Primaer():
                 ZS += Primaer.Codieren(Zeichen1, 1)
             return ZS[::-1]
 
-class Sekundaer(Primaer):        
+class Sekundaer(Primaer):
+    def EntschAll(Keydatei: str, Balldatei: str) -> bool:
+        """
+        Entfernt alle Sekundärverschlüsselungen auf einer angegebenen (*.ball)-Datei\n
+        Keydatei = Pfad(str), welcher zur benötigten Key-Datei führt\n
+        Zieldatei = Pfad(str), welcher zur benötigten (*.ball)-Datei führt
+        """
+        if (os.path.exists(Balldatei) and os.path.exists(Keydatei)):
+            temp = -1
+            try:
+                Datei = open(Keydatei, 'r', -1, 'utf-8')
+            except:
+                return '[Error: Keydatei konnte nicht geoeffnet werden]'
+            for Zeile in Datei.readlines():
+                    if (Zeile[0] != '['):
+                        temp += 1
+            Datei.close()
+
+            for i in range(temp):
+                Sekundaer.Entsch(Keydatei, Balldatei)
+        else:
+            return '[Error: benötigte(r) Parameter falsch oder nicht vorhanden]'
+
     def Versch(Anzahl: int, Keydatei: str, Balldatei: str) -> bool:
         """
         Schreibt eine bestimmte Anzahl an zufälligen Zeichen in eine Datei, welche durch die Schlüsseldatei wieder rückgängig gemacht werden kann.\n
@@ -154,10 +238,12 @@ class Sekundaer(Primaer):
             Datei = open(Keydatei, 'r', -1, 'utf-8')
         except:
             return False
+        repeat = -1
         for Zeile in Datei.readlines():
             Ergebnis += Zeile
-            if (Zeile[0] != '['):
+            if (Zeile[0] != '[') and (repeat < 0):
                 temp = len(Ergebnis) - len(Zeile)
+                repeat += 1
         Datei.close()
 
         Ergebnis2 = '' #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
@@ -169,7 +255,8 @@ class Sekundaer(Primaer):
             Ergebnis2 += Zeile
         Datei.close()
 
-        random.seed(Ergebnis) #Seed festlegen und hinzufügen von zufälligen Zeichen in Variable 'Ergebnis2'
+        random.seed(Ergebnis, 2) #Seed festlegen und hinzufügen von zufälligen Zeichen in Variable 'Ergebnis2'
+
         for i in range(Anzahl):
             Zahl = random.randint(0, len(Ergebnis2) - 1)
             Zahl2 = random.randint(0, len(Ergebnis2) - 1)
@@ -194,8 +281,8 @@ class Sekundaer(Primaer):
     def Entsch(Keydatei: str, Balldatei: str) -> bool:
         """
         Löscht eine bestimmte Anzahl an zufälligen Zeichen in eine Datei, welche mit der Schlüsseldatei bestimmt werden können.\n
-        Keydatei = string/Pfad, welcher zur benötigten Key-Datei führt\n
-        Zieldatei = string/Pfad, welcher zur benötigten (*.ball)-Datei führt
+        Keydatei = Pfad(str), welcher zur benötigten Key-Datei führt\n
+        Zieldatei = Pfad(str), welcher zur benötigten (*.ball)-Datei führt
         """
         if (not os.path.exists(Keydatei)) or (not os.path.exists(Balldatei)): #Kontrolle, ob alle Parameter korrekt angegeben wurden
             return False
@@ -224,7 +311,8 @@ class Sekundaer(Primaer):
             Ergebnis2 += Zeile
         Datei.close()
 
-        random.seed(Ergebnis) #Seed festlegen und entfernen von bestimmten, zuvor zufälligen, Zeichen in Variable 'Ergebnis2'
+        random.seed(Ergebnis, 2) #Seed festlegen und entfernen von bestimmten, zuvor zufälligen, Zeichen in Variable 'Ergebnis2'
+
         Zahl = []
         for i in range(Anzahl)[::-1]:
             Zahl.append(random.randint(0, len(Ergebnis2) - 2 - i))
@@ -252,29 +340,33 @@ class Sekundaer(Primaer):
 
 #=====================Beispiele für Implementierung und Tests=====================#
 '''
-Ergebnis = ''
+Ergebnis3 = ''
 Datei = open('C:\\Python\\Ligma\\Core\\test.txt', 'r', -1, 'utf-8') #speichert gesamten Inhalt von 'test.txt' in Variable 'Ergebnis'
 for zeile in Datei.readlines():
-    Ergebnis += zeile
+    Ergebnis3 += zeile
 Datei.close()
 
-Ergebnis = Primaer.Raedern(Ergebnis, 'v', 2000, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
-print(Ergebnis)
+Ergebnis3 = Primaer.Raedern(Ergebnis3, 'v', 5, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
+print(Ergebnis3)
 
 Datei = open('C:\\Python\\Ligma\\Core\\test.ball', 'w', -1, 'utf-8') #speichert zuvor verschlüsselten Text in Datei 'test.ball'
-Datei.write(Ergebnis)
+Datei.write(Ergebnis3)
 Datei.close()
 
 Sekundaer.Versch(27, 'C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #Hinzufügen einer Sekundärverschlüsselung zum Testen
+Sekundaer.Versch(28, 'C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #Hinzufügen einer Sekundärverschlüsselung zum Testen
+Sekundaer.Versch(985, 'C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #Hinzufügen einer Sekundärverschlüsselung zum Testen
+Sekundaer.EntschAll('C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball') #Entfernung der Sekundärverschlüsselung
 
-print(Sekundaer.Entsch('C:\\Python\\Ligma\\Core\\Key.lig', 'C:\\Python\\Ligma\\Core\\test.ball')) #Entfernung der Sekundärverschlüsselung
-
-Ergebnis = ''
+Ergebnis3 = ''
 Datei = open('C:\\Python\\Ligma\\Core\\test.ball', 'r', -1, 'utf-8') #speichert gesamten Inhalt von 'test.ball' in Variable 'Ergebnis'
 for zeile in Datei.readlines():
-    Ergebnis += zeile
+    Ergebnis3 += zeile
 Datei.close()
 
-Ergebnis = Primaer.Raedern(Ergebnis, 'e', 0, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
-print(Ergebnis)
+Ergebnis3 = Primaer.Raedern(Ergebnis3, 'e', 0, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
+print(Ergebnis3)
 '''
+
+
+

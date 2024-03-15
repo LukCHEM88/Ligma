@@ -152,7 +152,7 @@ def Versch():
     for zeile in datei:
         message += zeile
     datei.close()
-    
+
     Anz = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der Verschlüsselung ein: ', initialvalue=50, minvalue=1) # Frage nach Stärke der Verschlüsselung
     if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
         Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
@@ -169,7 +169,7 @@ def Versch():
                 message = len(message)
                 Anz2 = False
                 while not Anz2: # Failsave, fals Cancel
-                    Anz2 = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der Sekundärverschlüsselung ein: ', initialvalue=message//10, minvalue=1) # Frage nach Stärke der Sekundäverschlüsselung. Standartmäßig 10%.
+                    Anz2 = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Menge der per Sekundärverschlüsselung hinzugefügten Zeichen ein: ', initialvalue=message//10, minvalue=1) # Frage nach Stärke der Sekundäverschlüsselung. Standartmäßig 10%.
                     if not Anz2:
                         messagebox.showerror('Verschlüsseln', 'Sie müssen einen Wert eingeben.') # Nutzer wird informiert, dass er etwas eingeben muss.
                 Ligma.Sekundaer.Versch(Anz2,Keypfad,Savepfad) # Nutzereingaben werden an LigmaB weitergegeben zum Sekundärverschüsseln
