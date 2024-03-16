@@ -1,6 +1,6 @@
 # Import benötigter Module
 import tkinter as tk
-from tkinter import filedialog, simpledialog, messagebox, ttk
+from tkinter import filedialog, simpledialog, messagebox
 import os, platform, darkdetect, Ligma
 
 #=============================Funktionen=============================#
@@ -157,22 +157,22 @@ def Versch():
     if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
         Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
 
-        if Text[:7] == '[Error:': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
-            messagebox.showerror('Entschlüsseln', Text)
-        else:
+        if Text[0]: # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
             Savepfad = filedialog.asksaveasfilename(defaultextension='.ball', filetypes=[('Verschlüsselte Dateien', '*.ball')]) # Frage nach Speicherort der verschlüsselten Datei
             if Savepfad: # Failsave, fals Nutzer auf Cancel drückt
                 datei = open(Savepfad, 'w', encoding='utf-8')
-                datei.write(Text) # Speichern
+                datei.write(Text[1]) # Speichern
                 datei.close()
                 
                 message = len(message)
                 Anz2 = False
-                while not Anz2: # Failsave, fals Cancel
-                    Anz2 = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Menge der per Sekundärverschlüsselung hinzugefügten Zeichen ein: ', initialvalue=message//10, minvalue=1) # Frage nach Stärke der Sekundäverschlüsselung. Standartmäßig 10%.
-                    if not Anz2:
-                        messagebox.showerror('Verschlüsseln', 'Sie müssen einen Wert eingeben.') # Nutzer wird informiert, dass er etwas eingeben muss.
+                Anz2 = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Menge der per Sekundärverschlüsselung hinzugefügten Zeichen ein: ', initialvalue=message//10, minvalue=0) # Frage nach Stärke der Sekundäverschlüsselung. Standartmäßig 10%.
+                if not Anz2:
+                    Anz2 = 0
                 Ligma.Sekundaer.Versch(Anz2,Keypfad,Savepfad) # Nutzereingaben werden an LigmaB weitergegeben zum Sekundärverschüsseln
+                messagebox.showinfo('Entschlüsseln', 'Sekundärverschlüsselung abgeschlossen.')
+        else:
+            messagebox.showerror('Entschlüsseln', Text[1])
 
 #=============================Enstschlüsseln-Funktionen=============================#
 def Entschlüsseln():
@@ -289,14 +289,14 @@ def Entsch():
     datei.close()
 
     Text = Ligma.Primaer.Raedern(ball, 'e', 0, Keypfad) # ball wird entschlüsselt
-    if Text[:7] == '[Error:': # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
-        messagebox.showerror('Entschlüsseln', Text)
-    else:
+    if Text[0]: # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
         Savepfad = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Textdateien', '*.txt')]) # Fragt nach Speicherort
         if Savepfad: # Failsave, fals Cancel
             datei = open(Savepfad, 'w', encoding='utf-8') # Speichert
-            datei.write(Text)
+            datei.write(Text[1])
             datei.close()
+    else:
+        messagebox.showerror('Entschlüsseln', Text[1])
 
     datei = open(DateiEntpfad, 'w', encoding='utf-8') # Stellt den Ursprungszustand des Schlüssels und der verschlüsselten Datei wieder her, um diese wiederverwenden zu können
     datei.write(NachrichtOriginal)

@@ -1,67 +1,6 @@
-import random
-import os
+import random, os, platform, time, darkdetect
 import tkinter as tk
-from tkinter import ttk
-import darkdetect, platform
-
-class Progressbar():
-    def erstellen():
-        '''
-        Erstellt ein Fenster, welches die einen Fortschrittsbalken zeigt.
-        '''
-        global ProgWindow
-        global ProgBar
-        global ProgLabel
-        global InfoLabel
-
-        ProgWindow = tk.Tk()
-        ProgWindow.title("Lädt...")
-        ProgWindow.resizable('False', 'False')
-        ProgWindow.geometry('300x100')
-        if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
-            if os.path.exists('Icon_Ligma.ico'):
-                ProgWindow.iconbitmap('Icon_Ligma.ico')
-
-        ProgBar = ttk.Progressbar(ProgWindow, orient="horizontal", length=200, mode="determinate")
-        ProgBar.place(x='150', y='50', anchor='center')
-        ProgLabel = tk.Label(ProgWindow, text="0%")
-        ProgLabel.place(x='150', y='25', anchor='center')
-        InfoLabel = tk.Label(ProgWindow, text="Starting...")
-        InfoLabel.place(x='150', y='75', anchor='center')
-
-        if darkdetect.isDark(): # Darkmode wird eingestellt
-            # TODO: Window Border
-            ProgWindow.configure(bg='#323232')
-            ProgWindow.configure(highlightbackground='#323232')
-            #style = ttk.Style()
-            #style.configure("my.Horizontal.TProgressbar", background="#323232")
-            #ProgBar.configure(style='my.Horizontal.TProgressbar')
-            # FIXME: Hintergrund PB Mac
-            ProgLabel.configure(bg='#323232')
-            ProgLabel.configure(fg='white')
-            InfoLabel.configure(bg='#323232')
-            InfoLabel.configure(fg='white')
-    def setprogress(x):
-        '''
-        Setzt den Wert des Fortschrittsbalkens
-        '''
-        ProgBar["value"] = x
-        ProgLabel["text"] = str(x) + "%"
-    def setinfo(x):
-        '''
-        Setzt den Info Text
-        '''
-        InfoLabel["text"] = x
-    def fertig():
-        '''
-        Schliesst das Fenster
-        '''
-        ProgWindow.destroy()
-
-Progressbar.erstellen()
-Progressbar.setprogress(50)
-#Progressbar.fertig()
-#Progressbar.erstellen()
+from tkinter import ttk, messagebox
 
 #=====================Klassen/Funktionen=====================#
 
@@ -82,6 +21,7 @@ class Primaer():
                 break
 
         if (Richtung == 1):
+            Progressbar.setinfo('Zeichen ' + str(ZNummer) + ' von ' + str(ZLaenge) + ' wird entschlüsselt...')
             for RNummer in range(len(Rad)):
                 for i in range(len(Einzelt)):
                     if Rad[RNummer][i] == Zeichen:
@@ -89,6 +29,7 @@ class Primaer():
                         break
             Verschiebung = (Verschiebung - 1) % len(Einzelt)
         elif (Richtung == 0):
+            Progressbar.setinfo('Zeichen ' + str(ZNummer) + ' von ' + str(ZLaenge) + ' wird verschlüsselt...')
             for RNummer in range(len(Rad)):
                 Zeichen = Rad[RNummer][(Zeichen + Verschiebung) % len(Einzelt)] #Zahl, welche in Variable 'Zeichen' gespeichert is wird 'gerädert' in positive Richtung via des Mechanismus der Enigma
             Verschiebung = (Verschiebung + 1) % len(Einzelt) #Rad, welches genutzt wurde, wird in positive Richtung weitergedreht
@@ -117,11 +58,14 @@ class Primaer():
         global ZEinzelt
         global Verschiebung
         global Rad
+        global ZNummer
+        global ZLaenge
 
         if (Zeichenkette == '') or ((Schluesseln != 'e') and (Schluesseln != 'v')) or ((AnzahlR < 1) and (Schluesseln != 'e')) or (Keydatei == ''): #Check, ob alle Parameter genügend angegeben sind
-            return '[Error: benötigte(r) Parameter nicht vorhanden]'
+            return [False, '[Error: benötigte(r) Parameter nicht vorhanden]']
 
         Verschiebung = 0
+        ZLaenge = len(Zeichenkette)
         ZEinzelt = []
         Rad = []
 
@@ -136,9 +80,9 @@ class Primaer():
                 try:
                     Datei = open(Keydatei, 'r', -1, 'utf-8')
                 except: 
-                    return '[Error: Keydatei kann nicht geöffnet werden]'
+                    return [False, '[Error: Keydatei kann nicht geöffnet werden]']
             else:
-                return '[Error: Keydatei wurde nicht gefunden]'
+                return [False, '[Error: Keydatei wurde nicht gefunden]']
             Kontrolle = Einzelt.copy()
             Einzelt = eval(Datei.readline())
             Datei.close()
@@ -150,7 +94,7 @@ class Primaer():
                         temp = True
                         break
                 if (temp == False):
-                    return '[Error: (*.lig)-Datei und (*.ball)-Datei nicht kompatibel]'
+                    return [False, '[Error: (*.lig)-Datei und (*.ball)-Datei nicht kompatibel]']
 
         for i in range(len(Einzelt)):
                 ZEinzelt.append(i)
@@ -160,23 +104,34 @@ class Primaer():
                 Rad.append(ZEinzelt.copy())
                 Rad[i] = Primaer.Zufall(Rad[i])
 
+            Progressbar.erstellen()
+
             ZS = ''
+            Zaehler = 0
+            Aktual = 100 / ZLaenge
             for Zeichen1 in Zeichenkette:
+                ZNummer = Zeichen1
                 ZS += Primaer.Codieren(Zeichen1, 0)
+                Zaehler += Aktual
+                Progressbar.setprogress(int(Zaehler))
 
             Verschiebung = Verschiebung % len(Einzelt)
 
             try:
                 Datei = open(Keydatei, 'w', -1, 'utf-8')
             except:
-                return '[Error: Keydatei kann nicht überschrieben/erstellt werden]'
+                return [False, '[Error: Keydatei kann nicht überschrieben/erstellt werden]']
             Datei.write(str(Einzelt) + '\n')
             for i in range(len(Rad)):
                 Datei.write(str(Rad[i]) + '\n')
             Datei.write(str(Verschiebung))
             Datei.close()
 
-            return ZS
+            Progressbar.setinfo('Die Datei wurde erfolgreich verschlüsselt.')
+            time.sleep(0.1)
+            Progressbar.fertig()
+
+            return [True, ZS]
         elif (Schluesseln == 'e'): #Räder aus Key-Datei herauslesen und in 'Rad' speichern, Zeichenkette dekodieren und entschlüsselter Text zurückgeben
             Datei = open(Keydatei, 'r', -1, 'utf-8')
             temp = -1
@@ -189,14 +144,26 @@ class Primaer():
             Datei.close()
 
             if (temp > 0):
-                return '[Error: Datei noch Sekundaerverschluesselt]'
+                return [False, '[Error: Datei noch Sekundaerverschluesselt]']
 
             Rad = Rad[::-1]
 
+            Progressbar.erstellen()
+
             ZS = ''
+            Zaehler = 0
+            Aktual = 100 / ZLaenge
             for Zeichen1 in Zeichenkette[::-1]:
+                ZNummer = Zeichen1
                 ZS += Primaer.Codieren(Zeichen1, 1)
-            return ZS[::-1]
+                Zaehler += Aktual
+                Progressbar.setprogress(int(Zaehler))
+            
+            Progressbar.setinfo('Die Datei wurde erfolgreich entschlüsselt.')
+            time.sleep(0.1)
+            Progressbar.fertig()
+
+            return [True, ZS[::-1]]
 
 class Sekundaer(Primaer):
     def EntschAll(Keydatei: str, Balldatei: str) -> bool:
@@ -210,7 +177,7 @@ class Sekundaer(Primaer):
             try:
                 Datei = open(Keydatei, 'r', -1, 'utf-8')
             except:
-                return '[Error: Keydatei konnte nicht geoeffnet werden]'
+                return [False, '[Error: Keydatei konnte nicht geoeffnet werden]']
             for Zeile in Datei.readlines():
                     if (Zeile[0] != '['):
                         temp += 1
@@ -219,7 +186,7 @@ class Sekundaer(Primaer):
             for i in range(temp):
                 Sekundaer.Entsch(Keydatei, Balldatei)
         else:
-            return '[Error: benötigte(r) Parameter falsch oder nicht vorhanden]'
+            return [False, '[Error: benötigte(r) Parameter falsch oder nicht vorhanden]']
 
     def Versch(Anzahl: int, Keydatei: str, Balldatei: str) -> bool:
         """
@@ -337,6 +304,86 @@ class Sekundaer(Primaer):
 
         return True
 
+class Progressbar():
+    def erstellen():
+        """
+        Erstellt ein Fenster, welches die einen Fortschrittsbalken zeigt.
+        """
+        global ProgWindow
+        global ProgBar
+        global ProgLabel
+        global InfoLabel
+        global WindowAliveCheck
+
+        ProgWindow = tk.Tk()
+        ProgWindow.title('Datei wird verschlüsselt...')
+        ProgWindow.resizable('False', 'False')
+        ProgWindow.geometry('300x100')
+        if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
+            if os.path.exists('Icon_Ligma.ico'):
+                ProgWindow.iconbitmap('Icon_Ligma.ico')
+
+        ProgBar = ttk.Progressbar(ProgWindow, orient = 'horizontal', length = 200, mode = 'determinate')
+        ProgBar.place(x = '150', y = '50', anchor = 'center')
+        ProgLabel = tk.Label(ProgWindow, text = '0%')
+        ProgLabel.place(x = '150', y = '25', anchor = 'center')
+        InfoLabel = tk.Label(ProgWindow, text = 'Initialisierung...')
+        InfoLabel.place(x = '150', y = '75', anchor = 'center')
+
+        if darkdetect.isDark(): # Darkmode wird eingestellt
+            # TODO: Window Border
+            ProgWindow.configure(bg = '#323232')
+            ProgWindow.configure(highlightbackground = '#323232')
+            #style = ttk.Style()
+            #style.configure("my.Horizontal.TProgressbar", background = "#323232")
+            #ProgBar.configure(style = 'my.Horizontal.TProgressbar')
+            # FIXME: Hintergrund PB Mac
+            ProgLabel.configure(bg = '#323232')
+            ProgLabel.configure(fg = 'white')
+            InfoLabel.configure(bg = '#323232')
+            InfoLabel.configure(fg = 'white')
+        
+        WindowAliveCheck = True
+        ProgWindow.update()
+
+    def setprogress(x):
+        """
+        Setzt den Wert des Fortschrittsbalkens
+        """
+        global WindowAliveCheck
+        try:
+            ProgBar['value'] = x
+            ProgLabel['text'] = str(x) + '%'
+        except:
+            if WindowAliveCheck:
+                messagebox.showinfo('Ligma', 'Sie haben die Fortschrittsleiste geschlossen.\nLigma wird im Hintergrund weiterarbeiten.')
+                WindowAliveCheck = False
+
+    def setinfo(x):
+        """
+        Setzt den Info Text
+        """
+        global WindowAliveCheck
+        try:
+            InfoLabel['text'] = x
+            ProgWindow.update()
+        except:
+            if WindowAliveCheck:
+                messagebox.showinfo('Ligma', 'Sie haben die Fortschrittsleiste geschlossen.\nLigma wird im Hintergrund weiterarbeiten.')
+                WindowAliveCheck = False
+
+    def fertig():
+        """
+        Schliesst das Fenster
+        """
+        global WindowAliveCheck
+        try:
+            ProgWindow.destroy()
+        except:
+            if WindowAliveCheck:
+                messagebox.showinfo('Ligma', 'Sie haben die Fortschrittsleiste geschlossen.\nLigma wird im Hintergrund weiterarbeiten.')
+                WindowAliveCheck = False
+
 
 #=====================Beispiele für Implementierung und Tests=====================#
 '''
@@ -346,7 +393,7 @@ for zeile in Datei.readlines():
     Ergebnis3 += zeile
 Datei.close()
 
-Ergebnis3 = Primaer.Raedern(Ergebnis3, 'v', 5, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
+Ergebnis3 = Primaer.Raedern(Ergebnis3, 'v', 2000, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
 print(Ergebnis3)
 
 Datei = open('C:\\Python\\Ligma\\Core\\test.ball', 'w', -1, 'utf-8') #speichert zuvor verschlüsselten Text in Datei 'test.ball'
@@ -367,6 +414,3 @@ Datei.close()
 Ergebnis3 = Primaer.Raedern(Ergebnis3, 'e', 0, 'C:\\Python\\Ligma\\Core\\Key.lig') #siehe Funktionsbeschreibung und angegebene Parameter
 print(Ergebnis3)
 '''
-
-
-
