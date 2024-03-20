@@ -32,8 +32,8 @@ class Fenster():
         EinstButton = tk.Button(Hauptfenster, text='⚙',command=Fenster.Einstellungen)
         EinstButton.pack()
 
-        global Erscheinungsbild
-        if Erscheinungsbild == 'Dunkel' or Erscheinungsbild == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
+        global Settings
+        if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
             # TODO: Window Border
             Hauptfenster.configure(bg='#323232')
             Hauptfenster.configure(highlightbackground='#323232')
@@ -87,8 +87,8 @@ class Fenster():
         LFileVer = tk.Label(Hauptfenster, text='Keine Nachricht ausgewählt', anchor='center')
         LFileVer.place(x='300', y='120', width='180', anchor='center')
         
-        global Erscheinungsbild
-        if Erscheinungsbild == 'Dunkel' or Erscheinungsbild == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
+        global Settings
+        if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
             Hauptfenster.configure(bg='#323232')
             Hauptfenster.configure(highlightbackground='#323232')
             Buttonback.configure(highlightbackground='#323232')
@@ -142,8 +142,8 @@ class Fenster():
         LFileEnt = tk.Label(Hauptfenster, text='Keine Nachricht ausgewählt', anchor='center')
         LFileEnt.place(x='300', y='120', width='180', anchor='center')
 
-        global Erscheinungsbild
-        if Erscheinungsbild == 'Dunkel' or Erscheinungsbild == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
+        global Settings
+        if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
             Hauptfenster.configure(bg='#323232')
             Hauptfenster.configure(highlightbackground='#323232')
             Buttonback.configure(highlightbackground='#323232')
@@ -177,16 +177,16 @@ class Fenster():
             element.destroy()
         Hauptfenster.title('Ligma - Entschlüsseln')
 
-        global Erscheinungsbild
+        global Settings
 
         Buttonback = tk.Button(Hauptfenster, text='← Zurück', command=Fenster.Hauptmenü)
         Buttonback.place(x='25', y='25')
         LErsch = tk.Label(Hauptfenster,text='Erscheinungsbild')
         LErsch.pack()
-        BErsch = tk.Button(Hauptfenster,text=Erscheinungsbild,command=Einstellungen.Erscheinungsbild)
+        BErsch = tk.Button(Hauptfenster,text=Settings[0],command=Einstellungen.Erscheinungsbild)
         BErsch.pack()
 
-        if Erscheinungsbild == 'Dunkel' or Erscheinungsbild == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
+        if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
             Hauptfenster.configure(bg='#323232')
             Hauptfenster.configure(highlightbackground='#323232')
             Buttonback.configure(highlightbackground='#323232')
@@ -206,43 +206,133 @@ class Einstellungen:
     Für die Einstellungen benötigte Funktionen
     '''
     def Default():
-        if platform.system() == 'Darwin':
-            if not os.path.exists(os.path.expanduser("~/Library/Application Support/Ligma")):
-                os.mkdir(os.path.expanduser("~/Library/Application Support/Ligma"))
-            datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'w', encoding='utf-8')
+        '''
+        Stadart wiederherstellen
 
-        global Erscheinungsbild
-        global ProgStatus
+        Erklärung für Variable Settings:
+        [Erscheinungsbild, Status Progressbar, Datei nach Verschlüsseln öffnen, Datei nach Entschlüsseln öffnen]
+        '''
+        global Settings
+        Settings = ['System', 'Ein', 'Fragen', 'Fragen']
 
-        Erscheinungsbild = 'System'
-        ProgStatus = 'Ein'
-
-        datei.writelines('Erscheinungsbild (System/Hell/Dunkel)\n' + Erscheinungsbild + '\nProgressbar (Ein/1%/10%/Aus)' + ProgStatus + '\n')
-        datei.close()
+        Einstellungen.Speichern()
+            
     def Laden():
+        '''
+        Einstellungen aus Datei laden
+        '''
         if platform.system() == 'Darwin':
             if not os.path.exists(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt")):
                 Einstellungen.Default()
                 return None
             else:
                 datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'r', encoding='utf-8')
-
-        global Erscheinungsbild
-        Erscheinungsbild = datei.readline()
-
-    def Erscheinungsbild():
-        global Erscheinungsbild
-        if Erscheinungsbild == 'System':
-            Erscheinungsbild = 'Hell'
-        elif Erscheinungsbild == 'Hell':
-            Erscheinungsbild = 'Dunkel'
         else:
-            Erscheinungsbild = 'System'
+            Einstellungen.Default()
+            return None
+
+        global Settings
+        Settings = []
+        for i in range(4):
+            datei.readline()
+            Settings.append(datei.readline().rstrip('\n'))
+        Einstellungen.Check()
+        datei.close()
+
+    def Speichern():
+        '''
+        Einstellungen in Datei speichern
+        '''
+        save = True
         if platform.system() == 'Darwin':
             if not os.path.exists(os.path.expanduser("~/Library/Application Support/Ligma")):
                 os.mkdir(os.path.expanduser("~/Library/Application Support/Ligma"))
             datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'w', encoding='utf-8')
-        datei.writelines(Erscheinungsbild)
+        else:
+            save = False
+            
+        if save:
+            datei.write('Erscheinungsbild (System/Hell/Dunkel)\n' + Settings[0] + '\nProgressbar (Ein/1%/10%/Aus)\n' + Settings[1] + '\nNach Verschlüsseln öffnen (Fragen/Datei/Ordner/Aus)\n' + Settings[2] + '\nNach Entschlüsseln öffnen (Fragen/Datei/Ordner/Aus)\n' + Settings[3])
+            datei.close()
+            
+    def Check():
+        '''
+        Überprüft, ob in der Datei unsinn steht und berichtigt gegebenenfalls
+        '''
+        if not (Settings[0] == 'Hell' or Settings[0] == 'Dunkel'):
+            Settings[0] = 'System'
+        if not (Settings[1] == '1%' or Settings[1] == '10%' or Settings[1] == 'Aus'):
+            Settings[1] = 'Ein'
+        if not (Settings[2] == 'Datei' or Settings[2] == 'Ordner' or Settings[2] == 'Aus'):
+            Settings[2] = 'Fragen'
+        if not (Settings[3] == 'Datei' or Settings[3] == 'Ordner' or Settings[3] == 'Aus'):
+            Settings[3] = 'Fragen'
+        Einstellungen.Speichern()
+
+    def Erscheinungsbild():
+        '''
+        Anpassen des Erscheinugsbildes
+        '''
+        global Settings
+        
+        if Settings[0] == 'System':
+            Settings[0] = 'Hell'
+        elif Settings[0] == 'Hell':
+            Settings[0] = 'Dunkel'
+        else:
+            Settings[0] = 'System'
+        Einstellungen.Speichern()
+        Fenster.Einstellungen()
+        
+    def ProgStat():
+        '''
+        Anpassen des Status der Fortschritssleiste
+        '''
+        global Settings
+        
+        if Settings[1] == 'Ein':
+            Settings[1] = '1%'
+        elif Settings[1] == '1%':
+            Settings[1] = '10%'
+        elif Settings[1] == '10%':
+            Settings[1] = 'Aus'
+        else:
+            Settings[1] = 'Ein'
+        Einstellungen.Speichern()
+        Fenster.Einstellungen()
+                    
+    def OpenVer():
+        '''
+        Anpassen von nach Verschlüsseln öffnen
+        '''
+        global Settings
+        
+        if Settings[2] == 'Fragen':
+            Settings[2] = 'Datei'
+        elif Settings[2] == 'Datei':
+            Settings[2] = 'Ordner'
+        elif Settings[2] == 'Ordner':
+            Settings[2] = 'Aus'
+        else:
+            Settings[2] = 'Fragen'
+        Einstellungen.Speichern()
+        Fenster.Einstellungen()
+
+    def OpenEnt():
+        '''
+        Anpassen von nach Entschlüsseln öffnen
+        '''
+        global Settings
+        
+        if Settings[3] == 'Fragen':
+            Settings[3] = 'Datei'
+        elif Settings[3] == 'Datei':
+            Settings[3] = 'Ordner'
+        elif Settings[3] == 'Ordner':
+            Settings[3] = 'Aus'
+        else:
+            Settings[3] = 'Fragen'
+        Einstellungen.Speichern()
         Fenster.Einstellungen()
 
 
@@ -297,11 +387,9 @@ class Verschlüsseln:
             message += zeile
         datei.close()
 
-        global Erscheinungsbild
-
         Anz = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der Verschlüsselung ein: ', initialvalue=50, minvalue=1) # Frage nach Stärke der Verschlüsselung
         if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
-            Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad, Erscheinungsbild) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
+            Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
 
             if Text[0]: # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
                 Savepfad = filedialog.asksaveasfilename(defaultextension='.ball', filetypes=[('Verschlüsselte Dateien', '*.ball')]) # Frage nach Speicherort der verschlüsselten Datei
@@ -382,9 +470,7 @@ class Entschlüsseln:
             ball += zeile
         datei.close()
 
-        global Erscheinungsbild
-
-        Text = Ligma.Primaer.Raedern(ball, 'e', 0, Keypfad, Erscheinungsbild) # ball wird entschlüsselt
+        Text = Ligma.Primaer.Raedern(ball, 'e', 0, Keypfad) # ball wird entschlüsselt
         if Text[0]: # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
             Savepfad = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Textdateien', '*.txt')]) # Fragt nach Speicherort
             if Savepfad: # Failsave, fals Cancel
