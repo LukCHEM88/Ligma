@@ -8,6 +8,13 @@ class Fenster():
     """
     Erstellt die Fenster für die jeweiligen Teile des Programms.
     """
+    global Error
+    try:
+        if Error:
+            messagebox.showerror('Einstellungen', 'Einstellungen konnten nicht gespeichert werden.\n' + Error)
+            Error = False
+    except:
+        pass
     def Hauptmenü():
         """
         Erstellt ein Willkommensfenster und Buttons zu den anderen Teilen des Programms.
@@ -185,6 +192,18 @@ class Fenster():
         LErsch.pack()
         BErsch = tk.Button(Hauptfenster,text=Settings[0],command=Einstellungen.Erscheinungsbild)
         BErsch.pack()
+        LProg = tk.Label(Hauptfenster,text='Fortschrittsleiste')
+        LProg.pack()
+        BProg = tk.Button(Hauptfenster,text=Settings[1],command=Einstellungen.ProgStat)
+        BProg.pack()
+        LÖV = tk.Label(Hauptfenster,text='Nach Verschlüsseln öffnen')
+        LÖV.pack()
+        BÖV = tk.Button(Hauptfenster,text=Settings[2],command=Einstellungen.OpenVer)
+        BÖV.pack()
+        LÖE = tk.Label(Hauptfenster,text='Nach Entschlüsseln öffnen')
+        LÖE.pack()
+        BÖE = tk.Button(Hauptfenster,text=Settings[3],command=Einstellungen.OpenEnt)
+        BÖE.pack()
 
         if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
             Hauptfenster.configure(bg='#323232')
@@ -193,6 +212,15 @@ class Fenster():
             LErsch.configure(bg='#323232')
             LErsch.configure(fg='white')
             BErsch.configure(highlightbackground='#323232')
+            LProg.configure(bg='#323232')
+            LProg.configure(fg='white')
+            BProg.configure(highlightbackground='#323232')
+            LÖV.configure(bg='#323232')
+            LÖV.configure(fg='white')
+            BÖV.configure(highlightbackground='#323232')
+            LÖE.configure(bg='#323232')
+            LÖE.configure(fg='white')
+            BÖE.configure(highlightbackground='#323232')
         else:
             Hauptfenster.configure(bg='#ECECEC')
             Hauptfenster.configure(highlightbackground='#ECECEC')
@@ -200,6 +228,15 @@ class Fenster():
             LErsch.configure(bg='#ECECEC')
             LErsch.configure(fg='black')
             BErsch.configure(highlightbackground='#ECECEC')
+            LProg.configure(bg='#ECECEC')
+            LProg.configure(fg='black')
+            BProg.configure(highlightbackground='#ECECEC')
+            LÖV.configure(bg='#ECECEC')
+            LÖV.configure(fg='black')
+            BÖV.configure(highlightbackground='#ECECEC')
+            LÖE.configure(bg='#ECECEC')
+            LÖE.configure(fg='black')
+            BÖE.configure(highlightbackground='#ECECEC')
 
 class Einstellungen:
     '''
@@ -244,20 +281,43 @@ class Einstellungen:
         Einstellungen in Datei speichern
         '''
         save = True
+        global Error
+        Error = False
         if platform.system() == 'Darwin':
             if not os.path.exists(os.path.expanduser("~/Library/Application Support/Ligma")):
-                os.mkdir(os.path.expanduser("~/Library/Application Support/Ligma"))
-            datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'w', encoding='utf-8')
+                try:
+                    os.mkdir(os.path.expanduser("~/Library/Application Support/Ligma"))
+                except:
+                    save = False
+                    Error = '[Error: Verzeichnis Ligma konnte nicht erstellt werden]'
+            try:
+                datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'w', encoding='utf-8')
+            except:
+                save = False
+                Error = '[Error: Einstellungen.txt konnte nicht erstelllt werden]'
+        elif platform.system() == 'Windows':
+            if not os.path.exists(os.path.join(os.environ['APPDATA'],'Ligma')):
+                try:
+                    os.mkdir(os.path.join(os.environ['APPDATA'],'Ligma'))
+                except:
+                    save = False
+                    Error = '[Error: Verzeichnis Ligma konnte nicht erstellt werden]'
+            try:
+                datei = open(os.path.join(os.environ['APPDATA'],'Ligma\\Einstellungen.txt'), 'w', encoding='utf-8')
+            except:
+                save = False
+                Error = '[Error: Einstellungen.txt konnte nicht erstelllt werden]'
         else:
             save = False
+            Error = '[Error: Betriebssystem nicht unterstützt/erkannt]'
             
         if save:
-            datei.write('Erscheinungsbild (System/Hell/Dunkel)\n' + Settings[0] + '\nProgressbar (Ein/1%/10%/Aus)\n' + Settings[1] + '\nNach Verschlüsseln öffnen (Fragen/Datei/Ordner/Aus)\n' + Settings[2] + '\nNach Entschlüsseln öffnen (Fragen/Datei/Ordner/Aus)\n' + Settings[3])
+            datei.write('Erscheinungsbild (System/Hell/Dunkel)\n' + Settings[0] + '\nProgressbar (Ein/1%/10%/Aus)\n' + Settings[1] + '\nNach Verschlüsseln öffnen (Fragen/Ordner/Aus)\n' + Settings[2] + '\nNach Entschlüsseln öffnen (Fragen/Datei/Ordner/Aus)\n' + Settings[3])
             datei.close()
             
     def Check():
         '''
-        Überprüft, ob in der Datei unsinn steht und berichtigt gegebenenfalls
+        Überprüft, ob in der Datei Unsinn steht und berichtigt gegebenenfalls
         '''
         if not (Settings[0] == 'Hell' or Settings[0] == 'Dunkel'):
             Settings[0] = 'System'
@@ -308,8 +368,6 @@ class Einstellungen:
         global Settings
         
         if Settings[2] == 'Fragen':
-            Settings[2] = 'Datei'
-        elif Settings[2] == 'Datei':
             Settings[2] = 'Ordner'
         elif Settings[2] == 'Ordner':
             Settings[2] = 'Aus'
