@@ -8,21 +8,17 @@ class Fenster():
     """
     Erstellt die Fenster für die jeweiligen Teile des Programms.
     """
-    global Error
-    try:
-        if Error:
-            messagebox.showerror('Einstellungen', 'Einstellungen konnten nicht gespeichert werden.\n' + Error)
-            Error = False
-    except:
-        pass
     def Hauptmenü():
         """
         Erstellt ein Willkommensfenster und Buttons zu den anderen Teilen des Programms.
         """
-
-        if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
-            if os.path.exists('Icon_Ligma.ico'):
-                Hauptfenster.iconbitmap('Icon_Ligma.ico')
+        global Error
+        try:
+            if Error:
+                messagebox.showerror('Einstellungen', 'Einstellungen konnten nicht gespeichert werden.\n' + Error)
+                Error = False
+        except:
+            pass
 
         for element in Hauptfenster.winfo_children(): # GUI Elemente von anderen Funktionen werden entfernt
             element.destroy()
@@ -37,7 +33,7 @@ class Fenster():
         ButtonEnt = tk.Button(Hauptfenster, text='Entschlüsseln', command=Fenster.Entschlüsseln)
         ButtonEnt.place(x='100', y='150', anchor='center')
         EinstButton = tk.Button(Hauptfenster, text='⚙',command=Fenster.Einstellungen)
-        EinstButton.pack()
+        EinstButton.place(x='25', y='25')
 
         global Settings
         if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
@@ -66,6 +62,9 @@ class Fenster():
         if FirstRun: # Prüfung, damit die Initialisierung des Fenster nur einmal ausgeführt wird
             Hauptfenster.geometry('400x300')
             Hauptfenster.resizable('False', 'False')
+            if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
+                if os.path.exists('Icon_Ligma.ico'):
+                    Hauptfenster.iconbitmap('Icon_Ligma.ico')
             FirstRun = False
             Hauptfenster.mainloop()
 
@@ -182,28 +181,32 @@ class Fenster():
     def Einstellungen():
         for element in Hauptfenster.winfo_children(): # GUI Elemente von anderen Funktionen werden entfernt
             element.destroy()
-        Hauptfenster.title('Ligma - Entschlüsseln')
+        Hauptfenster.title('Ligma - Einstellungen')
 
         global Settings
 
         Buttonback = tk.Button(Hauptfenster, text='← Zurück', command=Fenster.Hauptmenü)
         Buttonback.place(x='25', y='25')
         LErsch = tk.Label(Hauptfenster,text='Erscheinungsbild')
-        LErsch.pack()
+        LErsch.place(x='120', y='90', anchor='center')
         BErsch = tk.Button(Hauptfenster,text=Settings[0],command=Einstellungen.Erscheinungsbild)
-        BErsch.pack()
+        BErsch.place(x='300', y='90', anchor='center')
         LProg = tk.Label(Hauptfenster,text='Fortschrittsleiste')
-        LProg.pack()
+        LProg.place(x='120', y='130', anchor='center')
         BProg = tk.Button(Hauptfenster,text=Settings[1],command=Einstellungen.ProgStat)
-        BProg.pack()
+        BProg.place(x='300', y='130', anchor='center')
         LÖV = tk.Label(Hauptfenster,text='Nach Verschlüsseln öffnen')
-        LÖV.pack()
+        LÖV.place(x='120', y='170', anchor='center')
         BÖV = tk.Button(Hauptfenster,text=Settings[2],command=Einstellungen.OpenVer)
-        BÖV.pack()
+        BÖV.place(x='300', y='170', anchor='center')
         LÖE = tk.Label(Hauptfenster,text='Nach Entschlüsseln öffnen')
-        LÖE.pack()
+        LÖE.place(x='120', y='210', anchor='center')
         BÖE = tk.Button(Hauptfenster,text=Settings[3],command=Einstellungen.OpenEnt)
-        BÖE.pack()
+        BÖE.place(x='300', y='210', anchor='center')
+        Default = tk.Button(Hauptfenster,text='Standart Wiederherstellen',command=Einstellungen.Defaultbutton)
+        Default.place(x='120', y='260', anchor='center')
+        Info = tk.Button(Hauptfenster,text='Info',command=Fenster.Info)
+        Info.place(x='300', y='260', anchor='center')
 
         if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
             Hauptfenster.configure(bg='#323232')
@@ -221,6 +224,8 @@ class Fenster():
             LÖE.configure(bg='#323232')
             LÖE.configure(fg='white')
             BÖE.configure(highlightbackground='#323232')
+            Default.configure(highlightbackground='#323232')
+            Info.configure(highlightbackground='#323232')
         else:
             Hauptfenster.configure(bg='#ECECEC')
             Hauptfenster.configure(highlightbackground='#ECECEC')
@@ -237,6 +242,50 @@ class Fenster():
             LÖE.configure(bg='#ECECEC')
             LÖE.configure(fg='black')
             BÖE.configure(highlightbackground='#ECECEC')
+            Default.configure(highlightbackground='#ECECEC')
+            Info.configure(highlightbackground='#ECECEC')
+
+    def Info():
+        global Infofenster
+        try:
+            Infofenster.destroy()
+        except:
+            Infofenster = tk.Tk()
+            Infofenster.geometry('1065x400')
+            Infofenster.resizable('False', 'False')
+            if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
+                if os.path.exists('Icon_Ligma.ico'):
+                    Infofenster.iconbitmap('Icon_Ligma.ico')
+            Infofenster.title('Information zu den Ligma Einstellungen')
+            Label = tk.Label(Infofenster, text='''
+Erscheinungsbild: Gibt an, wie die App dargestellt wird.
+System → App richtet sich nach dem System.
+Hell → App verwendet den hellen Modus.
+Dunkel → App verwendet den dunklen Modus.
+
+Fortschrittsleiste: Gibt an, wie häufig die Fortschrittsleiste aktualisiert wird.
+Ein → Die Fortschrittsleiste wird bei jedem ver-/entschlüsselten Zeichen aktualisiert. Kann bei langsameren Rechner dazu führen, dass die App sehr lange rechnen muss.
+1% → Die Fortschrittsleiste wird aktualisiert wenn je 1% des Dokuments ver-/entschlüsselt wurden.
+10% → Die Fortschrittsleiste wird aktualisiert wenn je 10% des Dokuments ver-/entschlüsselt wurden. Für langsamere Rechner empfohlen.
+Aus → Die App arbeitet vollständig im Hintergrund. Ligma ist so am schnellsten.
+
+Nach Verschlüsseln öffnen: Gibt an, ob der Ordner, in dem die verschlüsselte Datei gespeichert wurde, geöffnet werden soll.
+Fragen → Die App fragt, ob der Ordner geöffnet werden soll.
+Ordner → Die App öffnet den Ordner automatisch.
+Aus → Die App öffnet den Ordner nicht.
+
+Nach Entschlüsseln öffnen: Gibt an, ob die entschlüsselte Datei oder der Ordner, in dem diese gespeichert wurde, geöffnet werden soll.
+Fragen (Datei) → Die App fragt, ob die Datei geöffnet werden soll.
+Fragen (Ordner) → Die App fragt, ob der Ordner geöffnet werden soll.
+Datei → Die App öffnet die Datei automatisch.
+Ordner → Die App öffnet den Ordner automatisch.
+Aus → Die App öffnet nichts.''', anchor='w', justify='left')
+            Label.place(x='20', y='0')
+            if Settings[0] == 'Dunkel' or Settings[0] == 'System' and darkdetect.isDark(): # Darkmode wird eingestellt
+                Infofenster.configure(bg='#323232')
+                Infofenster.configure(highlightbackground='#323232')
+                Label.configure(bg='#323232')
+                Label.configure(fg='white')
 
 class Einstellungen:
     '''
@@ -250,31 +299,52 @@ class Einstellungen:
         [Erscheinungsbild, Status Progressbar, Datei nach Verschlüsseln öffnen, Datei nach Entschlüsseln öffnen]
         '''
         global Settings
-        Settings = ['System', 'Ein', 'Fragen', 'Fragen']
+        Settings = ['System', 'Ein', 'Fragen', 'Fragen (Datei)']
 
         Einstellungen.Speichern()
+
+    def Defaultbutton():
+        Einstellungen.Default()
+        Fenster.Einstellungen()
             
     def Laden():
         '''
         Einstellungen aus Datei laden
         '''
+        global Error
+        save = True
         if platform.system() == 'Darwin':
             if not os.path.exists(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt")):
                 Einstellungen.Default()
                 return None
             else:
-                datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'r', encoding='utf-8')
+                try:
+                    datei = open(os.path.expanduser("~/Library/Application Support/Ligma/Einstellungen.txt"), 'r', encoding='utf-8')
+                except:
+                    Error = 'Einstellungen.txt konnte nicht geöffnet werden'
+                    save = False
+        elif platform.system() == 'Windows':
+            if not os.path.exists(os.path.join(os.environ['APPDATA'],'Ligma')):
+                Einstellungen.Default()
+                return None
+            else:
+                try:
+                    datei = open(os.path.join(os.environ['APPDATA'],'Ligma'), 'r', encoding='utf-8')
+                except:
+                    Error = 'Einstellungen.txt konnte nicht geöffnet werden'
+                    save = False
         else:
             Einstellungen.Default()
             return None
 
         global Settings
-        Settings = []
-        for i in range(4):
-            datei.readline()
-            Settings.append(datei.readline().rstrip('\n'))
+        Settings = [None,None,None,None]
+        if save:
+            for i in range(4):
+                datei.readline()
+                Settings[i] = datei.readline().rstrip('\n')
+            datei.close()
         Einstellungen.Check()
-        datei.close()
 
     def Speichern():
         '''
@@ -282,7 +352,6 @@ class Einstellungen:
         '''
         save = True
         global Error
-        Error = False
         if platform.system() == 'Darwin':
             if not os.path.exists(os.path.expanduser("~/Library/Application Support/Ligma")):
                 try:
@@ -299,6 +368,7 @@ class Einstellungen:
             if not os.path.exists(os.path.join(os.environ['APPDATA'],'Ligma')):
                 try:
                     os.mkdir(os.path.join(os.environ['APPDATA'],'Ligma'))
+                    print(os.path.join(os.environ['APPDATA'],'Ligma'))
                 except:
                     save = False
                     Error = '[Error: Verzeichnis Ligma konnte nicht erstellt werden]'
@@ -312,7 +382,7 @@ class Einstellungen:
             Error = '[Error: Betriebssystem nicht unterstützt/erkannt]'
             
         if save:
-            datei.write('Erscheinungsbild (System/Hell/Dunkel)\n' + Settings[0] + '\nProgressbar (Ein/1%/10%/Aus)\n' + Settings[1] + '\nNach Verschlüsseln öffnen (Fragen/Ordner/Aus)\n' + Settings[2] + '\nNach Entschlüsseln öffnen (Fragen/Datei/Ordner/Aus)\n' + Settings[3])
+            datei.write('Erscheinungsbild (System/Hell/Dunkel)\n' + Settings[0] + '\nProgressbar (Ein/1%/10%/Aus)\n' + Settings[1] + '\nNach Verschlüsseln öffnen (Fragen/Ordner/Aus)\n' + Settings[2] + '\nNach Entschlüsseln öffnen (Fragen (Datei)/Fragen (Ordner)/Datei/Ordner/Aus)\n' + Settings[3])
             datei.close()
             
     def Check():
@@ -325,8 +395,8 @@ class Einstellungen:
             Settings[1] = 'Ein'
         if not (Settings[2] == 'Datei' or Settings[2] == 'Ordner' or Settings[2] == 'Aus'):
             Settings[2] = 'Fragen'
-        if not (Settings[3] == 'Datei' or Settings[3] == 'Ordner' or Settings[3] == 'Aus'):
-            Settings[3] = 'Fragen'
+        if not (Settings[3] == 'Fragen (Ordner)' or Settings[3] == 'Datei' or Settings[3] == 'Ordner' or Settings[3] == 'Aus'):
+            Settings[3] = 'Fragen (Datei)'
         Einstellungen.Speichern()
 
     def Erscheinungsbild():
@@ -382,14 +452,16 @@ class Einstellungen:
         '''
         global Settings
         
-        if Settings[3] == 'Fragen':
+        if Settings[3] == 'Fragen (Datei)':
+            Settings[3] = 'Fragen (Ordner)'
+        elif Settings[3] == 'Fragen (Ordner)':
             Settings[3] = 'Datei'
         elif Settings[3] == 'Datei':
             Settings[3] = 'Ordner'
         elif Settings[3] == 'Ordner':
             Settings[3] = 'Aus'
         else:
-            Settings[3] = 'Fragen'
+            Settings[3] = 'Fragen (Datei)'
         Einstellungen.Speichern()
         Fenster.Einstellungen()
 
@@ -437,17 +509,28 @@ class Verschlüsseln:
     def Start():
         """
         Wird aktiv, wenn eine Schlüsseldatei und eine Nachrichtdatei ausgewählt wurde.
-        Verschlüsselt die Datei mit Ligma und LigmaB.
+        Verschlüsselt die Datei mit Ligma.
         """
+        global Settings
         datei = open(DateiVerpfad, 'r', encoding='utf-8') # Zu verschlüsselnde Datei wird eingelesen und in message gespeichert
         message = ''
         for zeile in datei:
             message += zeile
         datei.close()
 
+        if Settings[1] == 'Ein':
+            LigmaEinstellungen = [True, True, False]
+        elif Settings[1] == '1%':
+            LigmaEinstellungen = [True, False, True]
+        elif Settings[1] == '10%':
+            LigmaEinstellungen = [True, False, False]
+        elif Settings[1] == 'Aus':
+            LigmaEinstellungen = [False, False, False]
+        LigmaEinstellungen.append(Settings[0])
+
         Anz = simpledialog.askinteger('Verschlüsseln', 'Bitte geben sie die Stärke der Verschlüsselung ein: ', initialvalue=50, minvalue=1) # Frage nach Stärke der Verschlüsselung
         if Anz: # Failsave, wenn der Nutzer bei der Integereingabe auf Cancel drückt
-            Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
+            Text = Ligma.Primaer.Raedern(message, 'v', Anz, Keypfad, LigmaEinstellungen) # Nutzereingaben werden an Ligma weitergegeben zum Verschüsseln
 
             if Text[0]: # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
                 Savepfad = filedialog.asksaveasfilename(defaultextension='.ball', filetypes=[('Verschlüsselte Dateien', '*.ball')]) # Frage nach Speicherort der verschlüsselten Datei
@@ -463,6 +546,21 @@ class Verschlüsseln:
                         Anz2 = 0
                     Ligma.Sekundaer.Versch(Anz2,Keypfad,Savepfad) # Nutzereingaben werden an LigmaB weitergegeben zum Sekundärverschüsseln
                     messagebox.showinfo('Entschlüsseln', 'Sekundärverschlüsselung abgeschlossen.')
+                    if Settings[2] == 'Ordner':
+                        if platform.system() == 'Windows':
+                            os.startfile(Savepfad.replace('/','\\').rstrip(os.path.basename(Savepfad)))
+                        elif platform.system() == 'Darwin':
+                            os.system('open "{}"'.format(Savepfad.rstrip(os.path.basename(Savepfad))))
+                        else:
+                            messagebox.showerror('Verschlüsseln', 'Betriebssystem nicht unterstützt')
+                    elif Settings[2] == 'Fragen':
+                        if messagebox.askokcancel('Verschlüsseln', 'Möchten Sie den Ordner ' + Savepfad.replace('/','\\').rstrip(os.path.basename(Savepfad)) + ' öffnen?'):
+                            if platform.system() == 'Windows':
+                                os.startfile(Savepfad.replace('/','\\').rstrip(os.path.basename(Savepfad)))
+                            elif platform.system() == 'Darwin':
+                                os.system('open "{}"'.format(Savepfad.rstrip(os.path.basename(Savepfad))))
+                            else:
+                                messagebox.showerror('Verschlüsseln', 'Betriebssystem nicht unterstützt')
             else:
                 messagebox.showerror('Entschlüsseln', Text[1])
 
@@ -508,6 +606,8 @@ class Entschlüsseln:
         Wird aktiv, wenn eine Schlüsseldatei und eine Verschlüsselte Datei ausgewählt wurde.
         Entschlüsselt die Datei mit Ligma und LigmaB.
         """
+        global Settings
+
         datei = open(DateiEntpfad, 'r', encoding='utf-8') # Speichert den Ursprungszustand des Schlüssels und der verschlüsselten Datei zwischen
         NachrichtOriginal = ''
         for element in datei:
@@ -528,13 +628,53 @@ class Entschlüsseln:
             ball += zeile
         datei.close()
 
-        Text = Ligma.Primaer.Raedern(ball, 'e', 0, Keypfad) # ball wird entschlüsselt
+        if Settings[1] == 'Ein':
+            LigmaEinstellungen = [True, True, False]
+        elif Settings[1] == '1%':
+            LigmaEinstellungen = [True, False, True]
+        elif Settings[1] == '10%':
+            LigmaEinstellungen = [True, False, False]
+        elif Settings[1] == 'Aus':
+            LigmaEinstellungen = [False, False, False]
+        LigmaEinstellungen.append(Settings[0])
+
+        Text = Ligma.Primaer.Raedern(ball, 'e', 0, Keypfad, LigmaEinstellungen) # ball wird entschlüsselt
         if Text[0]: # Fals Ligma ein Fehler zurückgibt wird dieser angezeigt. Sonst wird gespeichert
             Savepfad = filedialog.asksaveasfilename(defaultextension='.txt', filetypes=[('Textdateien', '*.txt')]) # Fragt nach Speicherort
             if Savepfad: # Failsave, fals Cancel
                 datei = open(Savepfad, 'w', encoding='utf-8') # Speichert
                 datei.write(Text[1])
                 datei.close()
+                if Settings[3] == 'Ordner':
+                    if platform.system() == 'Windows':
+                        os.startfile(Savepfad.replace('/','\\').rstrip(os.path.basename(Savepfad)))
+                    elif platform.system() == 'Darwin':
+                        os.system('open "{}"'.format(Savepfad.rstrip(os.path.basename(Savepfad))))
+                    else:
+                        messagebox.showerror('Verschlüsseln', 'Betriebssystem nicht unterstützt')
+                elif Settings[3] == 'Datei':
+                    if platform.system() == 'Windows':
+                        os.startfile(Savepfad.replace('/','\\'))
+                    elif platform.system() == 'Darwin':
+                        os.system('open "{}"'.format(Savepfad))
+                    else:
+                        messagebox.showerror('Verschlüsseln', 'Betriebssystem nicht unterstützt')
+                elif Settings[3] == 'Fragen (Datei)':
+                    if messagebox.askokcancel('Verschlüsseln', 'Möchten Sie die Datei ' + os.path.basename(Savepfad) + ' öffnen?'):
+                        if platform.system() == 'Windows':
+                            os.startfile(Savepfad.replace('/','\\'))
+                        elif platform.system() == 'Darwin':
+                            os.system('open "{}"'.format(Savepfad))
+                        else:
+                            messagebox.showerror('Verschlüsseln', 'Betriebssystem nicht unterstützt')
+                elif Settings[3] == 'Fragen (Ordner)':
+                    if messagebox.askokcancel('Verschlüsseln', 'Möchten Sie den Ordner ' + Savepfad.rstrip(os.path.basename(Savepfad)) + ' öffnen?'):
+                        if platform.system() == 'Windows':
+                            os.startfile(Savepfad.replace('/','\\').rstrip(os.path.basename(Savepfad)))
+                        elif platform.system() == 'Darwin':
+                            os.system('open "{}"'.format(Savepfad.rstrip(os.path.basename(Savepfad))))
+                        else:
+                            messagebox.showerror('Verschlüsseln', 'Betriebssystem nicht unterstützt')
         else:
             messagebox.showerror('Entschlüsseln', Text[1])
 
@@ -546,6 +686,7 @@ class Entschlüsseln:
         datei.close()
 
 #=============================Code zum initialisieren=============================#
+#print(os.path.join(os.environ['APPDATA'],'Ligma'))
 global Hauptfenster
 Hauptfenster = tk.Tk()
 FirstRun = True
