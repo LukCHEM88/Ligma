@@ -256,6 +256,7 @@ class Fenster():
             if (platform.system() == 'Windows'): # Wenn Ligma auf Windows ausgeführt wird, wird versucht das Icon zu öffnen
                 if os.path.exists('Icon_Ligma.ico'):
                     Infofenster.iconbitmap('Icon_Ligma.ico')
+                Infofenster.geometry('920x370')
             Infofenster.title('Information zu den Ligma Einstellungen')
             Label = tk.Label(Infofenster, text='''
 Erscheinungsbild: Gibt an, wie die App dargestellt wird.
@@ -329,7 +330,7 @@ class Einstellungen:
                 return None
             else:
                 try:
-                    datei = open(os.path.join(os.environ['APPDATA'],'Ligma'), 'r', encoding='utf-8')
+                    datei = open(os.path.join(os.environ['APPDATA'],'Ligma\\Einstellungen.txt'), 'r', encoding='utf-8')
                 except:
                     Error = 'Einstellungen.txt konnte nicht geöffnet werden'
                     save = False
@@ -519,7 +520,7 @@ class Verschlüsseln:
         datei.close()
 
         if Settings[1] == 'Ein':
-            LigmaEinstellungen = [True, True, False]
+            LigmaEinstellungen = [True, True, True]
         elif Settings[1] == '1%':
             LigmaEinstellungen = [True, False, True]
         elif Settings[1] == '10%':
@@ -629,7 +630,7 @@ class Entschlüsseln:
         datei.close()
 
         if Settings[1] == 'Ein':
-            LigmaEinstellungen = [True, True, False]
+            LigmaEinstellungen = [True, True, True]
         elif Settings[1] == '1%':
             LigmaEinstellungen = [True, False, True]
         elif Settings[1] == '10%':
@@ -686,7 +687,6 @@ class Entschlüsseln:
         datei.close()
 
 #=============================Code zum initialisieren=============================#
-#print(os.path.join(os.environ['APPDATA'],'Ligma'))
 global Hauptfenster
 Hauptfenster = tk.Tk()
 FirstRun = True
