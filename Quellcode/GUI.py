@@ -27,7 +27,7 @@ class Fenster():
         LabelWillkommen = tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware') # Platzieren der GUI
         LabelWillkommen.place(x='200', y='75', anchor='center')
         if platform.system() == 'Windows':
-            LabelCopyright = tk.Label(Hauptfenster, text='Version 10.0\n\n© 2024 MANN Industries')
+            LabelCopyright = tk.Label(Hauptfenster, text='Version 10.1\n\n© 2024 MANN Industries')
             LabelCopyright.place(x='200', y='235', anchor='center')
         ButtonVer = tk.Button(Hauptfenster, text='Verschlüsseln', command=Fenster.Verschlüsseln)
         ButtonVer.place(x='300', y='150', anchor='center')
@@ -355,7 +355,7 @@ class Einstellungen:
         self.__Appaerance = 'System'
         self.__Prog = 'Ein'
         self.__Ver = 'Fragen'
-        self.__Ent = 'Fragen (Ordner)'
+        self.__Ent = 'Fragen (Datei)'
 
         self.Speichern()
         if Button: # Wenn die Prozedur über den Standard wiederherstellen Button ausgeführt wurde wird das Fenster aktualisiert
@@ -579,7 +579,7 @@ class Verschlüsseln:
                             Ligma.Sekundaer.Versch(Zufallszahl, Keypfad, Savepfad)
                             Anz3 -= Zufallszahl
                         else:
-                            Ligma.Sekundaer.Versch(Anz3, 'Keydatei', 'Balldatei')
+                            Ligma.Sekundaer.Versch(Anz3, Keypfad, Savepfad)
                             Anz3 = 0
                     messagebox.showinfo('Verschlüsseln', 'Sekundärverschlüsselung abgeschlossen.')
                     if Settings.getOpenVer() == 'Ordner': # Wenn das automatische Öffnen des Ordners eingestellt ist wird dieser geöffnet
@@ -655,7 +655,7 @@ class Entschlüsseln:
             KeyOriginal += element
         datei.close()
 
-        Ligma.Sekundaer.EntschAll(Keypfad, DateiEntpfad) # Entschlüsselt die Sekundärverschlüsselung der Datei mit Ligma
+        Ligma.Sekundaer.Entsch(Keypfad, DateiEntpfad) # Entschlüsselt die Sekundärverschlüsselung der Datei mit Ligma
 
         datei = open(DateiEntpfad, 'r', encoding='utf-8') # Verschlüsselte Datei wird eingelesen und in ball gespeichert
         ball = ''

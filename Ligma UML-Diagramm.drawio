@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2024-04-17T14:48:56.357Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.2.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" version="24.2.5" etag="d0rdBKrK_1Z9a1Tg1yrZ" type="device">
+<mxfile host="Electron" modified="2024-04-24T11:02:04.374Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.2.5 Chrome/120.0.6099.109 Electron/28.1.0 Safari/537.36" etag="gU-vMfFp1csaVsSadswX" version="24.2.5" type="device">
   <diagram id="fs5gtP92zrj-OW9zUDLX" name="Seite-1">
-    <mxGraphModel dx="1114" dy="949" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="922" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1194" dy="853" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="922" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -46,7 +46,7 @@
         <mxCell id="31" value="+ Start()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="28" vertex="1">
           <mxGeometry y="78" width="140" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="33" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.033;entryY=0.029;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="6" edge="1" target="34">
+        <mxCell id="33" style="edgeStyle=none;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.033;entryY=0.029;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="6" target="34" edge="1">
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="280" y="266" as="targetPoint" />
             <Array as="points">
@@ -94,16 +94,16 @@
         <mxCell id="16" value="+ OpenEnt()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="34" vertex="1">
           <mxGeometry y="294" width="237" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-71" value="+ GetErscheinungsbild() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="34">
+        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-71" value="+ GetErscheinungsbild() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="34" vertex="1">
           <mxGeometry y="320" width="237" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-72" value="+ GetProgStat() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="34">
+        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-72" value="+ GetProgStat() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="34" vertex="1">
           <mxGeometry y="346" width="237" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-73" value="+ GetOpenVer() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="34">
+        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-73" value="+ GetOpenVer() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="34" vertex="1">
           <mxGeometry y="372" width="237" height="26" as="geometry" />
         </mxCell>
-        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-74" value="+ GetOpenEnt() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" vertex="1" parent="34">
+        <mxCell id="A8qvJ3Gyl2uDVsZ4zwVa-74" value="+ GetOpenEnt() → Zeichenkette" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="34" vertex="1">
           <mxGeometry y="398" width="237" height="26" as="geometry" />
         </mxCell>
         <mxCell id="45" style="edgeStyle=none;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;endArrow=block;endFill=0;entryX=0.43;entryY=0.962;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="41" target="A8qvJ3Gyl2uDVsZ4zwVa-74" edge="1">
@@ -130,19 +130,16 @@
           <mxGeometry y="78" width="840" height="26" as="geometry" />
         </mxCell>
         <mxCell id="62" value="Sekundaer" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-          <mxGeometry x="40" y="860" width="550" height="104" as="geometry" />
-        </mxCell>
-        <mxCell id="63" value="+ EntschAll(Keydatei : Zeichenkette, Balldatei : Zeichenkette) → Wahrheitswert" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="62" vertex="1">
-          <mxGeometry y="26" width="550" height="26" as="geometry" />
+          <mxGeometry x="40" y="860" width="550" height="78" as="geometry" />
         </mxCell>
         <mxCell id="64" value="+ Versch(Anzahl : Integer, Keydatei : Zeichenkette, Balldatei : Zeichenkette) → Wahrheitswert" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="62" vertex="1">
-          <mxGeometry y="52" width="550" height="26" as="geometry" />
+          <mxGeometry y="26" width="550" height="26" as="geometry" />
         </mxCell>
         <mxCell id="66" value="+ Entsch(Keydatei : Zeichenkette, Balldatei : Zeichenkette) → Wahrheitswert" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="62" vertex="1">
-          <mxGeometry y="78" width="550" height="26" as="geometry" />
+          <mxGeometry y="52" width="550" height="26" as="geometry" />
         </mxCell>
         <mxCell id="67" value="Progressbar" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;" parent="1" vertex="1">
-          <mxGeometry x="40" y="990" width="180" height="130" as="geometry" />
+          <mxGeometry x="40" y="970" width="180" height="130" as="geometry" />
         </mxCell>
         <mxCell id="68" value="+ erstellen()" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;" parent="67" vertex="1">
           <mxGeometry y="26" width="180" height="26" as="geometry" />

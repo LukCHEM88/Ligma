@@ -228,30 +228,6 @@ class Primaer():
             return [True, ZS[::-1]]
 
 class Sekundaer(Primaer):
-    def EntschAll(Keydatei: str, Balldatei: str) -> bool:
-        """
-        Entfernt alle Sekundärverschlüsselungen auf einer angegebenen (*.ball)-Datei\n
-        Keydatei = Pfad(str), welcher zur benötigten Key-Datei führt\n
-        Zieldatei = Pfad(str), welcher zur benötigten (*.ball)-Datei führt
-        """
-        if (os.path.exists(Balldatei) and os.path.exists(Keydatei)): #Kontrolle, ob alle Parameter korrekt angegeben wurden
-            temp = -1
-            
-            try: #öffnen der Keydatei
-                Datei = open(Keydatei, 'r', -1, 'utf-8')
-            except:
-                return [False, '[Error: Keydatei konnte nicht geöffnet werden]']
-            
-            for Zeile in Datei.readlines(): #zählt Anzahl von Sekundärverschlüsselungen
-                    if (Zeile[0] != '['):
-                        temp += 1
-            Datei.close()
-
-            for i in range(temp): #Entfernung aller Sekundärverschlüsselungen
-                Sekundaer.Entsch(Keydatei, Balldatei)
-        else:
-            return [False, '[Error: benötigte(r) Parameter falsch oder nicht vorhanden]']
-
     def Versch(Anzahl: int, Keydatei: str, Balldatei: str) -> bool:
         """
         Schreibt eine bestimmte Anzahl an zufälligen Zeichen in eine Datei, welche durch die Schlüsseldatei wieder rückgängig gemacht werden kann.\n
@@ -318,23 +294,24 @@ class Sekundaer(Primaer):
         if (not os.path.exists(Keydatei)) or (not os.path.exists(Balldatei)): #Kontrolle, ob alle Parameter korrekt angegeben wurden
             return False
 
-        Ergebnis = '' #speichern des Inhalts der angegeben Key-Datei in Variable 'Ergebnis' und herausspeichern der Variable 'Anzahl' aus Key-Datei
-        Anzahl = -1
-        try:
+        Ergebnis2 = '' #Initialisierung von Variablen
+        Anzahl_Sek = -1
+        Inhalt_Keydatei = []
+
+        try: #speichern des Inhalts der angegeben Key-Datei in Liste 'Inhalt_Keydatei' und herausspeichern der Anzahl von Sekundärverschlüsselungen in Variable 'Anzahl_Sek'
             Datei = open(Keydatei, 'r', -1, 'utf-8')
         except:
             return False
         for Zeile in Datei.readlines():
-            if (Zeile[0] != '[') and (Anzahl == -1):
-                Anzahl = int(Zeile)
-                if (Anzahl < 1):
-                    return False
-            else:
-                Ergebnis += Zeile
+            Inhalt_Keydatei.append(Zeile)
+            if (Zeile[0] != '['):
+                        Anzahl_Sek += 1    
         Datei.close()
 
-        Ergebnis2 = '' #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
-        try:
+        if (Anzahl_Sek < 1): #Beendung des Programms, wenn keine Sekundärverschlüsselung vorhanden ist
+            return True
+
+        try: #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
             Datei = open(Balldatei, 'r', -1, 'utf-8')
         except:
             return False
@@ -342,15 +319,30 @@ class Sekundaer(Primaer):
             Ergebnis2 += Zeile
         Datei.close()
 
-        random.seed(Ergebnis, 2) #Seed festlegen und entfernen von bestimmten, zuvor zufälligen, Zeichen in Variable 'Ergebnis2'
+        for i2 in range(Anzahl_Sek): #Widerholung von Entschlüsselung, bis alle Sekundärverschlüsselungen entfernt sind
 
-        Zahl = []
-        for i in range(Anzahl)[::-1]:
-            Zahl.append(random.randint(0, len(Ergebnis2) - 2 - i))
-            random.randint(0, len(Ergebnis2) - 2 - i)
-        Zahl = Zahl[::-1]
-        for Zahli in Zahl:
-            Ergebnis2 = Ergebnis2[0:Zahli] + Ergebnis2[Zahli + 1:len(Ergebnis2)]
+            temp2 = [] #speichern der Anzahl der Zeichen, welche in derzeitigem Entschlüsselungszyklus entfernt werden müssen in Variable 'Anzahl_Zei' und Aktualisierung der Liste 'Inhalt_Keydatei' und Variable 'Ergebnis' auf derzeitigen Entschlüsselungszyklus
+            Anzahl_Zei = -1
+            Ergebnis = ''
+            for Zeile in Inhalt_Keydatei:
+                if (Zeile[0] != '[') and (Anzahl_Zei == -1):
+                    Anzahl_Zei = int(Zeile)
+                    if (Anzahl_Zei < 1):
+                        return False
+                else:
+                    Ergebnis += Zeile
+                    temp2.append(Zeile)
+            Inhalt_Keydatei = temp2
+
+            random.seed(Ergebnis, 2) #Seed festlegen und entfernen von bestimmten, zuvor zufälligen, Zeichen in Variable 'Ergebnis2'
+
+            Zahl = [] #Entschlüsselung (Rückgängig-Machung von Verschlüsselungsverfahlen (dieselben Angaben, aber alles Rückwärts (klingt einfach, ist kompliziert)))
+            for i in range(Anzahl_Zei)[::-1]:
+                Zahl.append(random.randint(0, len(Ergebnis2) - 2 - i))
+                random.randint(0, len(Ergebnis2) - 2 - i)
+            Zahl = Zahl[::-1]
+            for Zahli in Zahl:
+                Ergebnis2 = Ergebnis2[0:Zahli] + Ergebnis2[Zahli + 1:len(Ergebnis2)]
 
         try: #speichern der modifizierten Key-Datei
             Datei = open(Keydatei, 'w', -1, 'utf-8')
