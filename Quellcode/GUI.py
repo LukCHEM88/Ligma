@@ -27,7 +27,7 @@ class Fenster():
         LabelWillkommen = tk.Label(Hauptfenster, text='Willkommen bei Ligma™\n\nDie schnellste und sicherste Verschlüsselungssoftware') # Platzieren der GUI
         LabelWillkommen.place(x='200', y='75', anchor='center')
         if platform.system() == 'Windows':
-            LabelCopyright = tk.Label(Hauptfenster, text='Version 10.1\n\n© 2024 MANN Industries')
+            LabelCopyright = tk.Label(Hauptfenster, text='Version 10.2\n\n© 2024 MANN Industries')
             LabelCopyright.place(x='200', y='235', anchor='center')
         ButtonVer = tk.Button(Hauptfenster, text='Verschlüsseln', command=Fenster.Verschlüsseln)
         ButtonVer.place(x='300', y='150', anchor='center')

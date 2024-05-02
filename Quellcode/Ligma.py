@@ -4,7 +4,7 @@ from tkinter import ttk, messagebox
 
 #=====================Klassen/Funktionen=====================#
 
-class Primaer():
+class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen selbst speichern!
     def Codieren(Zeichen: str, Richtung: int) -> str:
         """
         Nimmt ein Zeichen 'Zeichen' und schickt dieses durch alle vorhandenen Räder in die Richtung 'Richtung'.\n
@@ -25,16 +25,13 @@ class Primaer():
             if (Settings[0] == True):
                 Progressbar.setinfo('Zeichen ' + str(ZNummer) + ' von ' + str(ZLaenge) + ' wird entschlüsselt...') #Aktualisierung von Progressbar
             for RNummer in range(len(Rad)): #Zahl wird durch alle Räder entschlüsselt
-                for i in range(len(Einzelt)):
-                    if Rad[RNummer][i] == Zeichen: #Suche nach gleicher Zahl in ausgewähltem Rad (Schleife benötigt, da Anordnung zufällig)
-                        Zeichen = (i - Verschiebung) % len(Einzelt) #'Zeichen' wird zu Index des Werts 'Zeichen' in einer Liste in der Variable 'Rad' umgewandelt
-                        break
+                Zeichen = (Rad[RNummer][Zeichen] - Verschiebung) % len(Einzelt) #'Zeichen' wird zu Wert des Index 'Zeichen' in einer Liste in der Liste 'Rad' umgewandelt
             Verschiebung = (Verschiebung - 1) % len(Einzelt) #Verschiebung wird in negative Richtung zurück gedreht
         elif (Richtung == 0): #Verschlüsseln
             if (Settings[0] == True):
                 Progressbar.setinfo('Zeichen ' + str(ZNummer) + ' von ' + str(ZLaenge) + ' wird verschlüsselt...') #Aktualisierung von Progressbar
             for RNummer in range(len(Rad)): #Zahl wird durch alle Räder verschlüsselt
-                Zeichen = Rad[RNummer][(Zeichen + Verschiebung) % len(Einzelt)] #'Zeichen' wird zu Wert von einer Liste mit Index 'Zeichen' in der Variable 'Rad' umgewandelt
+                Zeichen = Rad[RNummer][(Zeichen + Verschiebung) % len(Einzelt)] #'Zeichen' wird zu Wert des Index 'Zeichen' in einer Liste in der Liste 'Rad' umgewandelt
             Verschiebung = (Verschiebung + 1) % len(Einzelt) #Verschiebung wird in positive Richtung weitergedreht
         return Einzelt[Zeichen]
 
@@ -120,17 +117,17 @@ class Primaer():
                 ZEinzelt.append(i)
 
         if (Schluesseln == 'v'):
-            for i in range(AnzahlR): #Räder hinzufügen und Zahlen zufällig anordnen
-                Rad.append(ZEinzelt.copy())
-                Rad[i] = Primaer.Zufall(Rad[i])
-
             if (Settings[0] == True): #erstellen der Progressbar (falls in Einstellungen aktiviert) und starten eines Threads (falls 'jede Sekunde aktualisieren' in Einstellungen eingestellt)
                 Progressbar.erstellen()
                 if (Settings[1] == 2):
                     update = 1
                     Thread.start()
-                Progressbar.setinfo('Datei wird verschlüsselt...')
+                Progressbar.setinfo('Verschlüsselung wird initiiert...')
             
+            for i in range(AnzahlR): #Räder hinzufügen und Zahlen zufällig anordnen
+                Rad.append(ZEinzelt.copy())
+                Rad[i] = Primaer.Zufall(Rad[i])
+
             ZS = '' #initialisieren der Variablen für Verschlüsselung
             ZNummer = 0
             Zaehler = 0
@@ -174,6 +171,13 @@ class Primaer():
 
             return [True, ZS]
         elif (Schluesseln == 'e'):
+            if (Settings[0] == True): #erstellen der Progressbar (falls in Einstellungen aktiviert) und starten eines Threads (falls 'jede Sekunde aktualisieren' in Einstellungen eingestellt)
+                Progressbar.erstellen()
+                if (Settings[1] == 2):
+                    update = 1
+                    Thread.start()
+                Progressbar.setinfo('Entschlüsselung wird initiiert......')
+                
             Datei = open(Keydatei, 'r', -1, 'utf-8') #Räder aus Key-Datei herauslesen und in 'Rad' speichern
             temp = -1
             for line in Datei.readlines():
@@ -186,15 +190,16 @@ class Primaer():
 
             if (temp > 0): #Kontrolle, ob Datei noch sekundärverschlüsselt
                 return [False, '[Error: Datei noch Sekundaerverschluesselt]']
+            
+            Rad_temp = [] #Umschreiben der Variable 'Rad', damit abgerufene einer Zahl den benötigten Index (bei der sie im Original liegt) bei Entschlüsselung ausgibt
+            for i in Rad[0]:
+                Rad_temp.append(0)
+            for i in range(len(Rad)):
+                for l in range(len(Rad[i])):
+                    Rad_temp[Rad[i][l]] = l
+                Rad[i] = Rad_temp.copy()
 
             Rad = Rad[::-1]
-
-            if (Settings[0] == True): #erstellen der Progressbar (falls in Einstellungen aktiviert) und starten eines Threads (falls 'jede Sekunde aktualisieren' in Einstellungen eingestellt)
-                Progressbar.erstellen()
-                if (Settings[1] == 2):
-                    update = 1
-                    Thread.start()
-                Progressbar.setinfo('Datei wird entschlüsselt...')
 
             ZS = '' #initialisieren der Variablen für Entschlüsselung
             ZNummer = 0
