@@ -4,7 +4,7 @@ from tkinter import ttk, messagebox
 
 #=====================Klassen/Funktionen=====================#
 
-class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen selbst speichern!
+class Primaer():
     def Codieren(Zeichen: str, Richtung: int) -> str:
         """
         Nimmt ein Zeichen 'Zeichen' und schickt dieses durch alle vorhandenen Räder in die Richtung 'Richtung'.\n
@@ -20,20 +20,41 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
             if Einzelt[Nummer] == Zeichen:
                 Zeichen = Nummer
                 break
-
+        
         if (Richtung == 1): #Entschlüsseln
             if (Settings[0] == True):
                 Progressbar.setinfo('Zeichen ' + str(ZNummer) + ' von ' + str(ZLaenge) + ' wird entschlüsselt...') #Aktualisierung von Progressbar
             for RNummer in range(len(Rad)): #Zahl wird durch alle Räder entschlüsselt
-                Zeichen = (Rad[RNummer][Zeichen] - Verschiebung) % len(Einzelt) #'Zeichen' wird zu Wert des Index 'Zeichen' in einer Liste in der Liste 'Rad' umgewandelt
-            Verschiebung = (Verschiebung - 1) % len(Einzelt) #Verschiebung wird in negative Richtung zurück gedreht
+                Zeichen = (Rad[RNummer][Zeichen] - Verschiebung[len(Verschiebung) - RNummer - 1]) % len(Einzelt) #'Zeichen' wird zu Wert des Index 'Zeichen' in einer Liste in der Liste 'Rad' umgewandelt
+            Primaer.Verschiebung(1) #Verschiebung wird in negative Richtung zurück gedreht
+
         elif (Richtung == 0): #Verschlüsseln
             if (Settings[0] == True):
                 Progressbar.setinfo('Zeichen ' + str(ZNummer) + ' von ' + str(ZLaenge) + ' wird verschlüsselt...') #Aktualisierung von Progressbar
             for RNummer in range(len(Rad)): #Zahl wird durch alle Räder verschlüsselt
-                Zeichen = Rad[RNummer][(Zeichen + Verschiebung) % len(Einzelt)] #'Zeichen' wird zu Wert des Index 'Zeichen' in einer Liste in der Liste 'Rad' umgewandelt
-            Verschiebung = (Verschiebung + 1) % len(Einzelt) #Verschiebung wird in positive Richtung weitergedreht
+                Zeichen = Rad[RNummer][(Zeichen + Verschiebung[RNummer]) % len(Einzelt)] #'Zeichen' wird zu Wert des Index 'Zeichen' in einer Liste in der Liste 'Rad' umgewandelt
+            Primaer.Verschiebung(0) #Verschiebung wird in positive Richtung weitergedreht
+
         return Einzelt[Zeichen]
+
+    def Verschiebung(Richtung: int, Rolle = 0) -> None:
+        """
+        Rotiert ein Rad um 1 in die angegebene Richtung. Falls ein Überschlag stattfindet, wird das nächste Rad in diese Richtung gedreht.\n
+        Achtung! Funktion führt sich selbst rekursiv aus!\n
+        Richtung = Integer (0 = Verschlüsseln; 1 = Entschlüsseln)
+        """
+        global Verschiebung
+        global Einzelt
+
+        temp = Verschiebung[Rolle]
+        if (Richtung == 0):
+            Verschiebung[Rolle] = (temp + 1) % len(Einzelt)
+            if (Verschiebung[Rolle] != temp + 1) and (Rolle < (len(Verschiebung) - 1)):
+                Primaer.Verschiebung(0, Rolle + 1)
+        elif (Richtung == 1):
+            Verschiebung[Rolle] = (temp - 1) % len(Einzelt)
+            if (Verschiebung[Rolle] != temp - 1) and (Rolle < (len(Verschiebung) - 1)):
+                Primaer.Verschiebung(1, Rolle + 1)
 
     def Zufall(Liste: list) -> list:
         """
@@ -75,7 +96,7 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
         if (Zeichenkette == '') or ((Schluesseln != 'e') and (Schluesseln != 'v')) or ((AnzahlR < 1) and (Schluesseln != 'e')) or (Keydatei == '') or (Einstellungen == []): #Check, ob alle Parameter genügend angegeben sind
             return [False, '[Error: benötigte(r) Parameter nicht vorhanden]']
 
-        Verschiebung = 0 #Initialisierung von benötigten Variablen
+        Verschiebung = [] #Initialisierung von benötigten Variablen
         timer = 0
         update = 0
         ZLaenge = len(Zeichenkette)
@@ -126,6 +147,7 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
             
             for i in range(AnzahlR): #Räder hinzufügen und Zahlen zufällig anordnen
                 Rad.append(ZEinzelt.copy())
+                Verschiebung.append(0)
                 Rad[i] = Primaer.Zufall(Rad[i])
 
             ZS = '' #initialisieren der Variablen für Verschlüsselung
@@ -157,7 +179,7 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
                 time.sleep(0.1)
                 Progressbar.fertig()
 
-            Verschiebung = Verschiebung % len(Einzelt)
+            Primaer.Verschiebung(1)
 
             try: #speichern der verschlüsselten Datei
                 Datei = open(Keydatei, 'w', -1, 'utf-8')
@@ -165,8 +187,9 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
                 return [False, '[Error: Keydatei kann nicht überschrieben/erstellt werden]']
             Datei.write(str(Einzelt) + '\n')
             for i in range(len(Rad)):
-                Datei.write(str(Rad[i]) + '\n')
-            Datei.write(str(Verschiebung))
+                temp = Rad[i].copy()
+                temp.append(Verschiebung[i])
+                Datei.write(str(temp) + '\n')
             Datei.close()
 
             return [True, ZS]
@@ -179,17 +202,14 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
                 Progressbar.setinfo('Entschlüsselung wird initiiert......')
                 
             Datei = open(Keydatei, 'r', -1, 'utf-8') #Räder aus Key-Datei herauslesen und in 'Rad' speichern
-            temp = -1
             for line in Datei.readlines():
+                temp = eval(line)
                 if (line[0] == '[') and (line[1] != "'"):
-                    Rad.append(eval(line))
-                elif (line[0] != '['):
-                    Verschiebung = int(line.rstrip()) % len(Einzelt) - 1
-                    temp += 1
-            Datei.close()
-
-            if (temp > 0): #Kontrolle, ob Datei noch sekundärverschlüsselt
-                return [False, '[Error: Datei noch Sekundaerverschluesselt]']
+                    Rad.append(temp[0:(len(temp) - 1)])
+                    Verschiebung.append(temp[len(temp) - 1])
+                elif (line[0] == int):
+                    return [False, '[Error: Datei noch Sekundaerverschluesselt]']
+            Datei.close()                
             
             Rad_temp = [] #Umschreiben der Variable 'Rad', damit abgerufene einer Zahl den benötigten Index (bei der sie im Original liegt) bei Entschlüsselung ausgibt
             for i in Rad[0]:
@@ -199,7 +219,7 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
                     Rad_temp[Rad[i][l]] = l
                 Rad[i] = Rad_temp.copy()
 
-            Rad = Rad[::-1]
+            Rad = Rad[::-1] #Umkehrung der Variable Rad, da Räder bei Entschlüsselung in umgedrehter Reihenfolge benutzt werden - Variable Verschiebung wird durch später unpraktischkeit nicht umgekehrt, sondern später errechnet
 
             ZS = '' #initialisieren der Variablen für Entschlüsselung
             ZNummer = 0
@@ -229,6 +249,8 @@ class Primaer(): #TODO: Keydatei verbessern --> Indexe von Zahlen, nicht Zahlen 
                 ProgWindow.update()
                 time.sleep(0.1)
                 Progressbar.fertig()
+            
+            Primaer.Verschiebung(0)
 
             return [True, ZS[::-1]]
 
@@ -251,12 +273,16 @@ class Sekundaer(Primaer):
         except:
             return False
         repeat = -1
+        temp = -1
         for Zeile in Datei.readlines():
             Ergebnis += Zeile
             if (Zeile[0] != '[') and (repeat < 0):
                 temp = len(Ergebnis) - len(Zeile)
                 repeat += 1
         Datei.close()
+
+        if (temp == -1):
+            temp = len(Ergebnis)
 
         Ergebnis2 = '' #speichern des Inhalts der angegeben (*.ball)-Datei in Variable 'Ergebnis2'
         try:
@@ -300,7 +326,7 @@ class Sekundaer(Primaer):
             return False
 
         Ergebnis2 = '' #Initialisierung von Variablen
-        Anzahl_Sek = -1
+        Anzahl_Sek = 0
         Inhalt_Keydatei = []
 
         try: #speichern des Inhalts der angegeben Key-Datei in Liste 'Inhalt_Keydatei' und herausspeichern der Anzahl von Sekundärverschlüsselungen in Variable 'Anzahl_Sek'
